@@ -1,0 +1,49 @@
+Name: Ritesh Gotyal
+DOB: 27/09/2003
+Jurisdiction: IL
+------------------------
+Name: fgchvjb gb
+DOB: 20/02/2003
+Jurisdiction: MN
+------------------------
+Name: Atharava Ghanekar
+DOB: 04/09/2004
+Jurisdiction: IL
+------------------------
+Type: Person
+Name: cvbnk gvhjbk
+DOB: 20/02/2003
+Jurisdiction: IL
+------------------------
+Type: Company
+Company Name: df
+Jurisdiction: IL
+------------------------
+Type: Company
+Company Name: dfgh
+Jurisdiction: IL
+------------------------
+Type: Person
+Name: jhkj bhjk
+DOB: 25/02/2003
+Jurisdiction: MN
+------------------------
+Type: Person
+Name: vjv  kjhk
+DOB: 24/02/2003
+Jurisdiction: MN
+------------------------
+Type: Company
+Company Name: gjfkv
+Jurisdiction: IL
+------------------------
+Type: Person
+Name: vmgvh vv
+DOB: 21/02/2003
+Jurisdiction: IL
+------------------------
+Type: Person
+Name: jhbkk vgk
+DOB: 09/09/2003
+Jurisdiction: IL
+------------------------
