@@ -2,7 +2,7 @@ package com.insurancemanagement.service;
 
 import com.insurancemanagement.model.Policy;
 
-public class PremiumCalculator implements PremiumCalculable {
+public class VehiclePremiumCalculator implements PremiumCalculable {
 
     @Override
     public double calculatePremium(Policy policy) {

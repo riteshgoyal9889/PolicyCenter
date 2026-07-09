@@ -77,7 +77,7 @@ public class MainApp {
 
         for (Policy policy : policies) {
 
-            PremiumCalculable premiumCalculator = new PremiumCalculator();
+            PremiumCalculable premiumCalculator = new VehiclePremiumCalculator();
 
             double premium = premiumCalculator.calculatePremium(policy);
             String status = policyService.checkPolicyStatus(policy);

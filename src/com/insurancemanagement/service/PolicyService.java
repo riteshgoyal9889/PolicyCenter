@@ -9,7 +9,7 @@ public class PolicyService {
     public String checkPolicyStatus(Policy policy) {
 
         LocalDate startDate = policy.getStartDate();
-        int duration = policy.getDurationInYears();
+        int duration = (int) policy.getDurationInYears();
 
         LocalDate expiryDate = startDate.plusYears(duration);
 

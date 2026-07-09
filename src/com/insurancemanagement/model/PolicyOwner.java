@@ -33,8 +33,8 @@ public class PolicyOwner {
         return age;
     }
 
-    @Override
-    public String toString() {
-        return "Customer{name='" + name + "', age=" + age + "}";
-    }
+//    @Override
+//    public String toString() {
+//        return "Customer{name='" + name + "', age=" + age + "}";
+//    }
 }

@@ -10,7 +10,7 @@ public class Policy {
     private final VehicleType vehicleType;
     private final int claimCount;
     private final LocalDate startDate;
-    private final int durationInYears;
+    private final double durationInYears;
 
     public Policy(String policyNumber, PolicyOwner policyOwner, VehicleType vehicleType, int claimCount, LocalDate startDate, int durationInYears) {
 
@@ -34,7 +34,7 @@ public class Policy {
             throw new IllegalArgumentException("Start date cannot be null.");
         }
 
-        if (durationInYears <= 0) {
+        if (durationInYears < 0) {
             throw new IllegalArgumentException("Duration must be greater than 0.");
         }
 
@@ -66,7 +66,7 @@ public class Policy {
         return startDate;
     }
 
-    public int getDurationInYears() {
+    public double getDurationInYears() {
         return durationInYears;
     }
 
