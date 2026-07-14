@@ -17,7 +17,7 @@ public class PolicyOwner {
             }
         }
 
-        if (age <= 18) {
+        if (age < 18) {
             throw new IllegalArgumentException("Age must be greater than 18.");
         }
 

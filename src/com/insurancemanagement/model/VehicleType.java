@@ -16,5 +16,4 @@ public enum VehicleType {
     public double getBasePremium() {
         return basePremium;
     }
-
-    }
+}

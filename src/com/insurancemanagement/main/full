@@ -77,10 +77,10 @@ public class MainApp {
 
         for (Policy policy : policies) {
 
-            PremiumCalculable standardPremiumCalculator = new StandardPremiumCalculator();
+            PremiumCalculable premiumCalculator = new StandardPremiumCalculator();
             PremiumCalculable noClaimBonusCalculator =new NoClaimBonusCalculator();
 
-            double standardPremium = standardPremiumCalculator.calculatePremium(policy);
+            double standardPremiumCalculator = premiumCalculator.calculatePremium(policy);
             double noClaimBonusPremium =noClaimBonusCalculator.calculatePremium(policy);
             String bonusMessage;
 
@@ -99,7 +99,7 @@ public class MainApp {
             System.out.println("Previous Claims: " + policy.getClaimCount());
             System.out.println("Start Date: " + policy.getStartDate());
             System.out.println("Duration: " + policy.getDurationInYears() + " years");
-            System.out.println("Standard Premium Amount: " + standardPremium);
+            System.out.println("Standard Premium Amount: " + standardPremiumCalculator);
             System.out.println("No Claim Bonus Premium: " + noClaimBonusPremium);
             System.out.println(bonusMessage);
 //            System.out.println("Policy Status: " + status);
