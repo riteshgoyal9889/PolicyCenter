@@ -21,7 +21,7 @@ public class MainApp {
         Scanner scanner = new Scanner(System.in);
 
         List<Policy> policies = new ArrayList<>();
-        Set<String> customerNames = new TreeSet<>();
+//        Set<String> customerNames = new TreeSet<>();
 
         System.out.println("===== Insurance Management System =====");
 
@@ -50,9 +50,10 @@ public class MainApp {
                 int duration = readInt(scanner, "Enter policy duration in years: ");
 
                 Policy policy = new Policy(policyNumber, policyOwner, vehicleType, claimCount, startDate, duration);
-
+                PolicyValidator validator = new PolicyValidator();
+                validator.validate(policy);
                 policies.add(policy);
-                customerNames.add(policyOwner.getName());
+//                customerNames.add(policyOwner.getName());
 
                 System.out.println("Policy added successfully.");
 
@@ -66,9 +67,9 @@ public class MainApp {
 //        System.out.println();
 //        System.out.println("===== Sorted Unique Customer Names =====");
 
-        for (String name : customerNames) {
-            System.out.println(name);
-        }
+//        for (String name : customerNames) {
+//            System.out.println(name);
+//        }
 
         System.out.println();
         System.out.println("===== Policy Details =====");
