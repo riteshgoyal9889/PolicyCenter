@@ -1,4 +1,4 @@
-package com.insurancemanagement.model;
+package com.wipfli.insurancemanagement.model;
 
 public class PolicyOwner {
 

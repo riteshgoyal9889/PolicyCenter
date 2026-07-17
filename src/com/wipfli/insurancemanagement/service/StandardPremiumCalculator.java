@@ -1,6 +1,6 @@
-package com.insurancemanagement.service;
+package com.wipfli.insurancemanagement.service;
 
-import com.insurancemanagement.model.Policy;
+import com.wipfli.insurancemanagement.model.Policy;
 
 public class StandardPremiumCalculator implements PremiumCalculable {
 

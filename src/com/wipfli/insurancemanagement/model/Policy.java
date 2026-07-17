@@ -1,4 +1,4 @@
-package com.insurancemanagement.model;
+package com.wipfli.insurancemanagement.model;
 
 import java.time.LocalDate;
 import java.util.Objects;

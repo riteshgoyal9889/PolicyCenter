@@ -1,18 +1,19 @@
-package com.insurancemanagement.main;
+package com.wipfli.insurancemanagement.main;
 
-import com.insurancemanagement.model.PolicyOwner;
-import com.insurancemanagement.model.Policy;
-import com.insurancemanagement.model.VehicleType;
-import com.insurancemanagement.service.*;
+import com.wipfli.insurancemanagement.model.PolicyOwner;
+import com.wipfli.insurancemanagement.model.Policy;
+import com.wipfli.insurancemanagement.model.VehicleType;
+import com.wipfli.insurancemanagement.service.*;
+import com.wipfli.insurancemanagement.service.*;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
+
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
-import java.util.TreeSet;
 
 public class MainApp {
 

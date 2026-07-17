@@ -1,8 +1,8 @@
 package com.insurancemanagement.main;
 
-import com.insurancemanagement.model.PolicyOwner;
-import com.insurancemanagement.model.Policy;
-import com.insurancemanagement.model.VehicleType;
+import model.com.wipfli.insurancemanagement.PolicyOwner;
+import model.com.wipfli.insurancemanagement.Policy;
+import model.com.wipfli.insurancemanagement.VehicleType;
 import com.insurancemanagement.service.*;
 
 import java.time.LocalDate;
