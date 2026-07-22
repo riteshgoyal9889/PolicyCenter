@@ -38,7 +38,7 @@ public class MainApp {
                 int claimCount = readInt(scanner, "Enter previous claims count: ");
                 LocalDate startDate = readDate(scanner, "Enter policy start date yyyy-mm-dd: ");
                 int duration = readInt(scanner, "Enter policy duration in years: ");
-                PolicyService policyService = new PolicyService();
+
 
                 Policy policy = new Policy(policyNumber, policyOwner, vehicleType, claimCount, startDate, duration);
 
@@ -57,9 +57,6 @@ public class MainApp {
         }
         System.out.println();
         System.out.println("===== Policy Details =====");
-
-        PolicyService policyService = new PolicyService();
-
 
         System.out.println("===== Duplicate Policy Numbers =====");
 
@@ -85,8 +82,6 @@ public class MainApp {
         PremiumCalculable standardCalculator = new StandardPremiumCalculator();
 
         PremiumCalculable noClaimCalculator = new NoClaimBonusCalculator();
-
-        PolicyService policyService = new PolicyService();
 
         while (true) {
 

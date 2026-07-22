@@ -40,17 +40,11 @@ public class Policy {
         return claimCount;
     }
 
-    public PolicyStatus getStatus() { return status;}
+    public LocalDate getStartDate() {return startDate;}
+
+    public double getDurationInYears() {return durationInYears;}
 
     public void recordClaim() { claimCount++;}
-
-    public LocalDate getStartDate() {
-        return startDate;
-    }
-
-    public double getDurationInYears() {
-        return durationInYears;
-    }
 
     public void expirePolicy() {
         isPolicyActive();
