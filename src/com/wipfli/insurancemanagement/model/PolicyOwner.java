@@ -17,8 +17,8 @@ public class PolicyOwner {
             }
         }
 
-        if (age < 18) {
-            throw new IllegalArgumentException("Age must be greater than 18.");
+        if (age < 18 || age>100) {
+            throw new IllegalArgumentException("Age must be between 18 and 100.");
         }
 
         this.name = name;
@@ -33,8 +33,8 @@ public class PolicyOwner {
         return age;
     }
 
-//    @Override
-//    public String toString() {
-//        return "Customer{name='" + name + "', age=" + age + "}";
-//    }
+    boolean isAdult() {
+        return age >= 18;
+    }
+
 }

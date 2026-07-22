@@ -1,18 +1,19 @@
-package com.insurancemanagement.main;
+package com.wipfli.insurancemanagement.main;
 
-import model.com.wipfli.insurancemanagement.PolicyOwner;
-import model.com.wipfli.insurancemanagement.Policy;
-import model.com.wipfli.insurancemanagement.VehicleType;
-import com.insurancemanagement.service.*;
+import com.wipfli.insurancemanagement.model.PolicyOwner;
+import com.wipfli.insurancemanagement.model.Policy;
+import com.wipfli.insurancemanagement.model.VehicleType;
+import com.wipfli.insurancemanagement.service.*;
+
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
+
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
-import java.util.TreeSet;
 
 public class MainApp {
 
@@ -21,7 +22,7 @@ public class MainApp {
         Scanner scanner = new Scanner(System.in);
 
         List<Policy> policies = new ArrayList<>();
-        Set<String> customerNames = new TreeSet<>();
+
 
         System.out.println("===== Insurance Management System =====");
 
@@ -51,8 +52,10 @@ public class MainApp {
 
                 Policy policy = new Policy(policyNumber, policyOwner, vehicleType, claimCount, startDate, duration);
 
+                PolicyValidator validator = new PolicyValidator();
+                validator.validate(policy);
                 policies.add(policy);
-                customerNames.add(policyOwner.getName());
+
 
                 System.out.println("Policy added successfully.");
 
@@ -63,12 +66,7 @@ public class MainApp {
             }
         }
 
-//        System.out.println();
-//        System.out.println("===== Sorted Unique Customer Names =====");
 
-        for (String name : customerNames) {
-            System.out.println(name);
-        }
 
         System.out.println();
         System.out.println("===== Policy Details =====");
@@ -77,10 +75,10 @@ public class MainApp {
 
         for (Policy policy : policies) {
 
-            PremiumCalculable premiumCalculator = new StandardPremiumCalculator();
+            PremiumCalculable standardPremiumCalculator = new StandardPremiumCalculator();
             PremiumCalculable noClaimBonusCalculator =new NoClaimBonusCalculator();
 
-            double standardPremiumCalculator = premiumCalculator.calculatePremium(policy);
+            double standardPremium = standardPremiumCalculator.calculatePremium(policy);
             double noClaimBonusPremium =noClaimBonusCalculator.calculatePremium(policy);
             String bonusMessage;
 
@@ -99,14 +97,14 @@ public class MainApp {
             System.out.println("Previous Claims: " + policy.getClaimCount());
             System.out.println("Start Date: " + policy.getStartDate());
             System.out.println("Duration: " + policy.getDurationInYears() + " years");
-            System.out.println("Standard Premium Amount: " + standardPremiumCalculator);
+            System.out.println("Standard Premium Amount: " + standardPremium);
             System.out.println("No Claim Bonus Premium: " + noClaimBonusPremium);
             System.out.println(bonusMessage);
-//            System.out.println("Policy Status: " + status);
-//            System.out.println("--------------------------------");
+            System.out.println("Policy Status: " + status);
+            System.out.println("--------------------------------");
         }
 
-//        System.out.println();
+
         System.out.println("===== Duplicate Policy Numbers =====");
 
         Set<Policy> policySet = new HashSet<>();
@@ -121,6 +119,31 @@ public class MainApp {
 
         if (!duplicateFound) {
             System.out.println("No duplicate policies found.");
+        }
+        if (!policies.isEmpty()) {
+
+
+
+            Policy policy = policies.get(0);
+
+            policy.expirePolicy();
+
+            System.out.println(
+                    "Policy Status After Expire : "
+                            + policy.getStatus()
+            );
+
+            try {
+
+                policy.renewPolicy();
+
+            } catch (IllegalStateException e) {
+
+                System.out.println(
+                        "Renewal Failed : "
+                                + e.getMessage()
+                );
+            }
         }
 
         scanner.close();

@@ -1,14 +1,14 @@
 package com.wipfli.insurancemanagement.service;
 
 import com.wipfli.insurancemanagement.model.Policy;
-
+import com.wipfli.insurancemanagement.model.PolicyStatus;
 import java.time.LocalDate;
 
 
 
 public class PolicyService {
 
-    public String checkPolicyStatus(Policy policy) {
+    public PolicyStatus checkPolicyStatus(Policy policy) {
 
         LocalDate startDate = policy.getStartDate();
         int duration = (int) policy.getDurationInYears();
@@ -18,13 +18,13 @@ public class PolicyService {
         LocalDate today = LocalDate.now();
 
         if (today.isAfter(expiryDate)) {
-            return "EXPIRED";
+            return PolicyStatus.EXPIRED;
         }
 
         LocalDate renewalDate = expiryDate.minusDays(30);
         if (today.isAfter(renewalDate)) {
-            return "DUE FOR RENEWAL";
+            return PolicyStatus.RENEWED;
         }
-        return "ACTIVE";
+        return PolicyStatus.ACTIVE;
     }
 }

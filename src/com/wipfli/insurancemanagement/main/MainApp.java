@@ -1,9 +1,6 @@
 package com.wipfli.insurancemanagement.main;
 
-import com.wipfli.insurancemanagement.model.PolicyOwner;
-import com.wipfli.insurancemanagement.model.Policy;
-import com.wipfli.insurancemanagement.model.VehicleType;
-import com.wipfli.insurancemanagement.service.*;
+import com.wipfli.insurancemanagement.model.*;
 import com.wipfli.insurancemanagement.service.*;
 
 import java.time.LocalDate;
@@ -20,95 +17,50 @@ public class MainApp {
     public static void main(String[] args) {
 
         Scanner scanner = new Scanner(System.in);
-
         List<Policy> policies = new ArrayList<>();
-//        Set<String> customerNames = new TreeSet<>();
+
 
         System.out.println("===== Insurance Management System =====");
-
         int policyCount = readInt(scanner, "Enter number of policies: ");
 
         for (int i = 1; i <= policyCount; i++) {
-
             System.out.println();
             System.out.println("Enter details for policy " + i);
 
             try {
-
                 String customerName = readString(scanner, "Enter customer name: ");
                 int customerAge = readInt(scanner, "Enter customer age: ");
 
                 PolicyOwner policyOwner = new PolicyOwner(customerName, customerAge);
 
                 String policyNumber = readString(scanner, "Enter policy number: ");
-
                 VehicleType vehicleType = readVehicleType(scanner);
-
                 int claimCount = readInt(scanner, "Enter previous claims count: ");
-
                 LocalDate startDate = readDate(scanner, "Enter policy start date yyyy-mm-dd: ");
-
                 int duration = readInt(scanner, "Enter policy duration in years: ");
+                PolicyService policyService = new PolicyService();
 
                 Policy policy = new Policy(policyNumber, policyOwner, vehicleType, claimCount, startDate, duration);
+
                 PolicyValidator validator = new PolicyValidator();
                 validator.validate(policy);
                 policies.add(policy);
-//                customerNames.add(policyOwner.getName());
 
-                System.out.println("Policy added successfully.");
+                showPolicyMenu(scanner, policy);
 
             } catch (IllegalArgumentException e) {
                 System.out.println("Invalid input: " + e.getMessage());
                 System.out.println("Please re-enter this policy.");
                 i--;
             }
+
         }
-
-//        System.out.println();
-//        System.out.println("===== Sorted Unique Customer Names =====");
-
-//        for (String name : customerNames) {
-//            System.out.println(name);
-//        }
-
         System.out.println();
         System.out.println("===== Policy Details =====");
 
         PolicyService policyService = new PolicyService();
 
-        for (Policy policy : policies) {
 
-            PremiumCalculable standardPremiumCalculator = new StandardPremiumCalculator();
-            PremiumCalculable noClaimBonusCalculator =new NoClaimBonusCalculator();
-
-            double standardPremium = standardPremiumCalculator.calculatePremium(policy);
-            double noClaimBonusPremium =noClaimBonusCalculator.calculatePremium(policy);
-            String bonusMessage;
-
-            if (policy.getClaimCount() == 0) {
-                bonusMessage = "(0 claims, 10% off)";
-            } else {
-                bonusMessage = "(" + policy.getClaimCount()
-                        + " claim(s), no bonus)";
-            }
-            String status = policyService.checkPolicyStatus(policy);
-
-            System.out.println("Policy Number: " + policy.getPolicyNumber());
-            System.out.println("Customer Name: " + policy.getCustomer().getName());
-            System.out.println("Customer Age: " + policy.getCustomer().getAge());
-            System.out.println("Vehicle Type: " + policy.getVehicleType());
-            System.out.println("Previous Claims: " + policy.getClaimCount());
-            System.out.println("Start Date: " + policy.getStartDate());
-            System.out.println("Duration: " + policy.getDurationInYears() + " years");
-            System.out.println("Standard Premium Amount: " + standardPremium);
-            System.out.println("No Claim Bonus Premium: " + noClaimBonusPremium);
-            System.out.println(bonusMessage);
-//            System.out.println("Policy Status: " + status);
-//            System.out.println("--------------------------------");
-        }
-
-//        System.out.println();
         System.out.println("===== Duplicate Policy Numbers =====");
 
         Set<Policy> policySet = new HashSet<>();
@@ -126,6 +78,67 @@ public class MainApp {
         }
 
         scanner.close();
+    }
+
+    private static void showPolicyMenu(Scanner scanner, Policy policy) {
+
+        PremiumCalculable standardCalculator = new StandardPremiumCalculator();
+
+        PremiumCalculable noClaimCalculator = new NoClaimBonusCalculator();
+
+        PolicyService policyService = new PolicyService();
+
+        while (true) {
+
+            System.out.println("\n===== POLICY MENU =====");
+
+            System.out.println("1. Calculate Premium");
+            System.out.println("2. Expire Policy");
+            System.out.println("3. Renew Policy");
+            System.out.println("4. Record Claim");
+            System.out.println("5. Exit");
+
+            int choice = readInt(scanner, "Enter choice: ");
+
+            try {
+
+                switch (choice) {
+
+                    case 1:
+                        double standardPremium = standardCalculator.calculatePremium(policy);
+                        double bonusPremium = noClaimCalculator.calculatePremium(policy);
+                        System.out.println("\nStandard Premium : " + standardPremium);
+                        System.out.println("No Claim Bonus Premium : " + bonusPremium);
+                        break;
+
+                    case 2:
+                        policy.expirePolicy();
+                        System.out.println("Policy expired successfully.");
+                        break;
+
+                    case 3:
+                        policy.renewPolicy();
+                        System.out.println("Policy renewed successfully.");
+                        break;
+
+                    case 4:
+                        policy.recordClaim();
+                        System.out.println("Claim recorded successfully.");
+                        System.out.println("Total Claims : " + policy.getClaimCount());
+                        break;
+
+                    case 5:
+                        return;
+
+                    default:
+                        System.out.println("Invalid choice.");
+                }
+
+            } catch (Exception e) {
+
+                System.out.println(e.getMessage());
+            }
+        }
     }
 
     private static String readString(Scanner scanner, String message) {
