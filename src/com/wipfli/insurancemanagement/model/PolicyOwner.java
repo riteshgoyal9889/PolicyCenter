@@ -1,4 +1,4 @@
-package com.insurancemanagement.model;
+package com.wipfli.insurancemanagement.model;
 
 public class PolicyOwner {
 
@@ -17,7 +17,7 @@ public class PolicyOwner {
             }
         }
 
-        if (age <= 18) {
+        if (age < 18) {
             throw new IllegalArgumentException("Age must be greater than 18.");
         }
 

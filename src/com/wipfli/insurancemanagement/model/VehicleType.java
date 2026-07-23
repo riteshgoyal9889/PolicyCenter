@@ -1,4 +1,4 @@
-package com.insurancemanagement.model;
+package com.wipfli.insurancemanagement.model;
 
 public enum VehicleType {
 
@@ -16,5 +16,4 @@ public enum VehicleType {
     public double getBasePremium() {
         return basePremium;
     }
-
-    }
+}

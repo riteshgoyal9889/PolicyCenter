@@ -1,8 +1,8 @@
 package com.insurancemanagement.main;
 
-import com.insurancemanagement.model.PolicyOwner;
-import com.insurancemanagement.model.Policy;
-import com.insurancemanagement.model.VehicleType;
+import model.com.wipfli.insurancemanagement.PolicyOwner;
+import model.com.wipfli.insurancemanagement.Policy;
+import model.com.wipfli.insurancemanagement.VehicleType;
 import com.insurancemanagement.service.*;
 
 import java.time.LocalDate;
@@ -63,8 +63,8 @@ public class MainApp {
             }
         }
 
-        System.out.println();
-        System.out.println("===== Sorted Unique Customer Names =====");
+//        System.out.println();
+//        System.out.println("===== Sorted Unique Customer Names =====");
 
         for (String name : customerNames) {
             System.out.println(name);
@@ -77,9 +77,19 @@ public class MainApp {
 
         for (Policy policy : policies) {
 
-            PremiumCalculable premiumCalculator = new VehiclePremiumCalculator();
+            PremiumCalculable premiumCalculator = new StandardPremiumCalculator();
+            PremiumCalculable noClaimBonusCalculator =new NoClaimBonusCalculator();
 
-            double premium = premiumCalculator.calculatePremium(policy);
+            double standardPremiumCalculator = premiumCalculator.calculatePremium(policy);
+            double noClaimBonusPremium =noClaimBonusCalculator.calculatePremium(policy);
+            String bonusMessage;
+
+            if (policy.getClaimCount() == 0) {
+                bonusMessage = "(0 claims, 10% off)";
+            } else {
+                bonusMessage = "(" + policy.getClaimCount()
+                        + " claim(s), no bonus)";
+            }
             String status = policyService.checkPolicyStatus(policy);
 
             System.out.println("Policy Number: " + policy.getPolicyNumber());
@@ -89,12 +99,14 @@ public class MainApp {
             System.out.println("Previous Claims: " + policy.getClaimCount());
             System.out.println("Start Date: " + policy.getStartDate());
             System.out.println("Duration: " + policy.getDurationInYears() + " years");
-            System.out.println("Premium Amount: " + premium);
-            System.out.println("Policy Status: " + status);
-            System.out.println("--------------------------------");
+            System.out.println("Standard Premium Amount: " + standardPremiumCalculator);
+            System.out.println("No Claim Bonus Premium: " + noClaimBonusPremium);
+            System.out.println(bonusMessage);
+//            System.out.println("Policy Status: " + status);
+//            System.out.println("--------------------------------");
         }
 
-        System.out.println();
+//        System.out.println();
         System.out.println("===== Duplicate Policy Numbers =====");
 
         Set<Policy> policySet = new HashSet<>();
@@ -133,7 +145,11 @@ public class MainApp {
         while (true) {
             try {
                 System.out.print(message);
-                return Integer.parseInt(scanner.nextLine());
+                int value = Integer.parseInt(scanner.nextLine());
+                if (value >=0) {
+                    return value;
+                }
+                System.out.println("Value must be greater than 0.");
             } catch (NumberFormatException e) {
                 System.out.println("Please enter a valid number.");
             }

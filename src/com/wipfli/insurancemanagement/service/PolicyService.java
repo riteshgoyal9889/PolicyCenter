@@ -1,8 +1,10 @@
-package com.insurancemanagement.service;
+package com.wipfli.insurancemanagement.service;
 
-import com.insurancemanagement.model.Policy;
+import com.wipfli.insurancemanagement.model.Policy;
 
 import java.time.LocalDate;
+
+
 
 public class PolicyService {
 
