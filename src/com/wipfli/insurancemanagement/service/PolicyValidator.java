@@ -12,7 +12,7 @@ public class PolicyValidator {
             throw new IllegalArgumentException("Policy cannot be null.");
         }
 
-        if (policy.getCustomer().getAge() < MINIMUM_AGE) {
+        if (policy.getPolicyOwner().getAge() < MINIMUM_AGE) {
             throw new IllegalArgumentException("Customer must be at least "+MINIMUM_AGE+" years old.");
         }
 
