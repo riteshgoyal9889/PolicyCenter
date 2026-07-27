@@ -43,6 +43,7 @@ public abstract class Policy {
     public int getClaimCount() {
         return claimCount;
     }
+
     public PolicyStatus getStatus() {
         return status;
     }

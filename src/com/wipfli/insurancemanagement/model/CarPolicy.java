@@ -13,9 +13,7 @@ public class CarPolicy extends Policy {
         this.registrationNumber = registrationNumber;
     }
 
-    public String getRegistrationNumber() {
-        return registrationNumber;
-    }
+
 
     @Override
     public String getPolicyDetails() {

@@ -40,7 +40,7 @@ public class MainApp {
                 LocalDate startDate = readDate(scanner, "Enter policy start date yyyy-mm-dd: ");
                 int duration = readInt(scanner, "Enter policy duration in years: ");
 
-
+                System.out.println("-----Policy for CAR-----");
                 Policy policy;
                 switch(vehicleType) {
 
