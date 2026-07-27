@@ -1,30 +1,50 @@
 package com.wipfli.insurancemanagement.service;
 
+import com.wipfli.insurancemanagement.exception.DuplicatePolicyNumberException;
+import com.wipfli.insurancemanagement.exception.PolicyNotFoundException;
 import com.wipfli.insurancemanagement.model.Policy;
-import com.wipfli.insurancemanagement.model.PolicyStatus;
-import java.time.LocalDate;
 
-//-------------THIS FILE IS NOT USED ANYWHERE IT IS JUST FOR FUTURE SCOPE--------------
+import java.util.HashMap;
+import java.util.Map;
 
-public class PolicyService {
+public class PolicyRegister {
 
-    public PolicyStatus checkPolicyStatus(Policy policy) {
+    private final Map<String, Policy> policies =
+            new HashMap<>();
 
-        LocalDate startDate = policy.getStartDate();
-        int duration = (int) policy.getDurationInYears();
+    public void add(Policy policy) {
 
-        LocalDate expiryDate = startDate.plusYears(duration);
+        if (policies.containsKey(
+                policy.getPolicyNumber())) {
 
-        LocalDate today = LocalDate.now();
-
-        if (today.isAfter(expiryDate)) {
-            return PolicyStatus.EXPIRED;
+            throw new DuplicatePolicyNumberException(
+                    policy.getPolicyNumber(),
+                    "Policy number already exists."
+            );
         }
 
-        LocalDate renewalDate = expiryDate.minusDays(30);
-        if (today.isAfter(renewalDate)) {
-            return PolicyStatus.RENEWED;
+        policies.put(
+                policy.getPolicyNumber(),
+                policy
+        );
+    }
+
+    public Policy findByNumber(
+            String policyNumber)
+            throws PolicyNotFoundException {
+
+        Policy policy =
+                policies.get(policyNumber);
+
+        if (policy == null) {
+
+            throw new PolicyNotFoundException(
+                    "Policy "
+                            + policyNumber
+                            + " not found."
+            );
         }
-        return PolicyStatus.ACTIVE;
+
+        return policy;
     }
 }

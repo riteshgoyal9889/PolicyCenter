@@ -10,7 +10,10 @@ public class TruckPolicy extends Policy {
     public TruckPolicy(String policyNumber, PolicyOwner policyOwner, VehicleType vehicleType, int claimCount, LocalDate startDate, int durationInYears,  double loadCapacityTons) {
 
         super(policyNumber, policyOwner, vehicleType, claimCount, startDate, durationInYears);
-
+        if (policyOwner.getAge() < 21) {
+            throw new InvalidPolicyDataException(
+                    policyNumber,"Truck driver must be at least 21 years old.");
+        }
         this.loadCapacityTons = loadCapacityTons;
     }
 

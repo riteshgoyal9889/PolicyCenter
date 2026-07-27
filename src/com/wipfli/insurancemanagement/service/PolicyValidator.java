@@ -1,5 +1,6 @@
 package com.wipfli.insurancemanagement.service;
 
+import com.wipfli.insurancemanagement.exception.InvalidPolicyDataException;
 import com.wipfli.insurancemanagement.model.Policy;
 
 public class PolicyValidator {
@@ -9,19 +10,19 @@ public class PolicyValidator {
     public void validate(Policy policy) {
 
         if (policy == null) {
-            throw new IllegalArgumentException("Policy cannot be null.");
+            throw new InvalidPolicyDataException("Policy cannot be null.");
         }
 
         if (policy.getPolicyOwner().getAge() < MINIMUM_AGE) {
-            throw new IllegalArgumentException("Customer must be at least "+MINIMUM_AGE+" years old.");
+            throw new InvalidPolicyDataException("Customer must be at least "+MINIMUM_AGE+" years old.");
         }
 
         if (policy.getClaimCount() < 0) {
-            throw new IllegalArgumentException("Claim count cannot be negative.");
+            throw new InvalidPolicyDataException("Claim count cannot be negative.");
         }
 
         if (policy.getVehicleType() == null) {
-            throw new IllegalArgumentException("Vehicle type cannot be empty.");
+            throw new InvalidPolicyDataException("Vehicle type cannot be empty.");
         }
 
         if (policy.getDurationInYears() <= 0) {
