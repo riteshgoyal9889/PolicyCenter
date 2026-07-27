@@ -1,5 +1,7 @@
 package com.wipfli.insurancemanagement.model;
 
+import com.wipfli.insurancemanagement.exception.InvalidPolicyDataException;
+
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -11,7 +13,9 @@ public abstract class Policy {
     private  int claimCount;
     private final LocalDate startDate;
     private final double durationInYears;
+    private final LocalDate expiryDate;
     private PolicyStatus status;
+
 
     public Policy(String policyNumber, PolicyOwner policyOwner, VehicleType vehicleType, int claimCount, LocalDate startDate, double durationInYears) {
         this.policyNumber = policyNumber.trim();
@@ -20,6 +24,10 @@ public abstract class Policy {
         this.claimCount = claimCount;
         this.startDate = startDate;
         this.durationInYears = durationInYears;
+        this.expiryDate =startDate.plusYears((Long)durationInYears);
+        if (expiryDate.isBefore(LocalDate.now())) {
+            throw new InvalidPolicyDataException(policyNumber, "Policy expiry date cannot be in the past.");
+        }
         this.status=PolicyStatus.ACTIVE;
 
     }
@@ -51,6 +59,8 @@ public abstract class Policy {
     public LocalDate getStartDate() {return startDate;}
 
     public double getDurationInYears() {return durationInYears;}
+
+    public LocalDate getExpiryDate() {  return expiryDate;}
 
     public void recordClaim() { claimCount++;}
 

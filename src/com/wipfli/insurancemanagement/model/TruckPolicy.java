@@ -1,6 +1,7 @@
 package com.wipfli.insurancemanagement.model;
-
+import com.wipfli.insurancemanagement.exception.InvalidPolicyDataException;
 import java.time.LocalDate;
+
 
 public class TruckPolicy extends Policy {
 
