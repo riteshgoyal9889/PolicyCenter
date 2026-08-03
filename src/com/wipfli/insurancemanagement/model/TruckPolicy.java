@@ -11,15 +11,19 @@ public class TruckPolicy extends Policy {
 
         super(policyNumber, policyOwner, vehicleType, claimCount, startDate, durationInYears);
         if (policyOwner.getAge() < 21) {
-            throw new InvalidPolicyDataException(
-                    policyNumber,"Truck driver must be at least 21 years old.");
+            throw new InvalidPolicyDataException(policyNumber,"Truck driver must be at least 21 years old.");
         }
         this.loadCapacityTons = loadCapacityTons;
     }
 
     @Override
     public String getPolicyDetails() {
+        return "Policy Number: " + getPolicyNumber()
+                + ", Owner: " + getPolicyOwner().getName()
+                + ", Status: " + getStatus()
+                + ", Load Capacity: " + loadCapacityTons + " Tons"
+                + " claim count " + getClaimCount()
+                + ", Expiry Date: " + getExpiryDate();
 
-        return "Policy Number: " + getPolicyNumber() + ", Owner: " + getPolicyOwner().getName()  + ", Status: " + getStatus() + ", Load Capacity: " + loadCapacityTons + " Tons";
     }
 }

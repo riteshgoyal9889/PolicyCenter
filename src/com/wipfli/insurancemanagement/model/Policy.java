@@ -87,53 +87,23 @@ public abstract class Policy {
     }
 
     public void renewPolicy(LocalDate today) {
-
         if (status != PolicyStatus.ACTIVE) {
-
-            throw new IllegalStatusChangeException(
-                    policyNumber,
-                    "Policy "
-                            + policyNumber
-                            + " is currently "
-                            + status
-                            + " and cannot be renewed."
-            );
+            throw new IllegalStatusChangeException(policyNumber,
+                    "Policy " + policyNumber
+                            + " is currently " + status
+                            + " and cannot be renewed.");
         }
+        long daysToExpiry = ChronoUnit.DAYS.between(today,expiryDate);
 
-        long daysToExpiry =
-                ChronoUnit.DAYS.between(
-                        today,
-                        expiryDate
-                );
-
-        if (daysToExpiry > 30) {
-
-            throw new RenewalNotAllowedException(
-                    policyNumber,
-                    "Renewal requested "
-                            + (daysToExpiry - 30)
-                            + " days too early."
-            );
+        if (daysToExpiry > 30)
+        {throw new RenewalNotAllowedException(policyNumber, "Renewal requested " + (daysToExpiry - 30)
+                + " days too early.");
         }
-
         if (claimCount >= 3) {
-
-            throw new RenewalNotAllowedException(
-                    policyNumber,
-                    "Policy has 3 or more claims. Refer to underwriting."
-            );
+            throw new RenewalNotAllowedException(policyNumber, "Policy has 3 or more claims. Refer to underwriting.");
         }
-
         status = PolicyStatus.RENEWED;
     }
-
-//    private void isPolicyActive() {
-//
-//        if (status != PolicyStatus.ACTIVE) {
-//
-//            throw new IllegalStateException("Operation allowed only for ACTIVE policies.");
-//        }
-//    }
 
     @Override
     public boolean equals(Object obj) {
