@@ -19,6 +19,7 @@ public class MainApp {
         Scanner scanner = new Scanner(System.in);
         List<Policy> policies = new ArrayList<>();
 
+        PolicyValidator validator = new PolicyValidator();
 
         System.out.println("===== Insurance Management System =====");
         int policyCount = readInt(scanner, "Enter number of policies: ");
@@ -39,12 +40,38 @@ public class MainApp {
                 LocalDate startDate = readDate(scanner, "Enter policy start date yyyy-mm-dd: ");
                 int duration = readInt(scanner, "Enter policy duration in years: ");
 
+                System.out.println("-----Policy for CAR-----");
+                Policy policy;
+                switch(vehicleType) {
 
-                Policy policy = new Policy(policyNumber, policyOwner, vehicleType, claimCount, startDate, duration);
+                    case CAR:
+                        String registrationNumber = readString( scanner,"Enter Registration Number: ");
 
-                PolicyValidator validator = new PolicyValidator();
+                        policy = new CarPolicy(policyNumber,policyOwner,vehicleType,claimCount,startDate,duration, registrationNumber);
+                        break;
+
+                    case BIKE:
+                        int engineCC = readInt(scanner, "Enter Engine CC: ");
+
+                        policy = new BikePolicy(policyNumber, policyOwner, vehicleType, claimCount, startDate, duration, engineCC);
+                        break;
+
+                    case TRUCK:
+                        double loadCapacity = readDouble(scanner, "Enter Load Capacity: ");
+
+                        policy = new TruckPolicy(policyNumber, policyOwner, vehicleType, claimCount, startDate, duration, loadCapacity);
+                        break;
+
+                    default:
+                        throw new IllegalArgumentException("Invalid vehicle type.");
+                }
+
                 validator.validate(policy);
                 policies.add(policy);
+                System.out.println("Policy added successfully.");
+                System.out.println();
+                System.out.println("\n===== CURRENT POLICY DETAILS =====");
+                System.out.println(policy.getPolicyDetails());
 
                 showPolicyMenu(scanner, policy);
 
@@ -58,6 +85,11 @@ public class MainApp {
         System.out.println();
         System.out.println("===== Policy Details =====");
 
+        for (Policy policy : policies) {
+            System.out.println(policy.getPolicyDetails());
+        }
+
+        System.out.println();
         System.out.println("===== Duplicate Policy Numbers =====");
 
         Set<Policy> policySet = new HashSet<>();
@@ -91,7 +123,8 @@ public class MainApp {
             System.out.println("2. Expire Policy");
             System.out.println("3. Renew Policy");
             System.out.println("4. Record Claim");
-            System.out.println("5. Exit");
+            System.out.println("5. Show Policy Details");
+            System.out.println("6. Exit");
 
             int choice = readInt(scanner, "Enter choice: ");
 
@@ -109,11 +142,13 @@ public class MainApp {
                     case 2:
                         policy.expirePolicy();
                         System.out.println("Policy expired successfully.");
+                        System.out.println("Current Status: " + policy.getStatus());
                         break;
 
                     case 3:
                         policy.renewPolicy();
                         System.out.println("Policy renewed successfully.");
+                        System.out.println("Current Status: " + policy.getStatus());
                         break;
 
                     case 4:
@@ -123,6 +158,11 @@ public class MainApp {
                         break;
 
                     case 5:
+                        System.out.println();
+                        System.out.println(policy.getPolicyDetails());
+                        break;
+
+                    case 6:
                         return;
 
                     default:
@@ -165,6 +205,22 @@ public class MainApp {
             }
         }
     }
+
+    private static double readDouble(Scanner scanner, String message) {
+        while (true) {
+            try {
+                System.out.print(message);
+                double value = Double.parseDouble(scanner.nextLine());
+                if (value > 0) {
+                    return value;
+                }
+                System.out.println("Value must be greater than 0.");
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter a valid decimal number.");
+            }
+        }
+    }
+
 
     private static LocalDate readDate(Scanner scanner, String message) {
 

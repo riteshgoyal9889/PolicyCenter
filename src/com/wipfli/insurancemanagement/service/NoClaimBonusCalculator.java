@@ -22,7 +22,7 @@ public class NoClaimBonusCalculator implements PremiumCalculable {
         double premium = basePremium;
 
 
-        premium += calculateAgeLoading(policy.getCustomer().getAge(), basePremium);
+        premium += calculateAgeLoading(policy.getPolicyOwner().getAge(), basePremium);
 
         premium += calculateClaimLoading(policy.getClaimCount());
 

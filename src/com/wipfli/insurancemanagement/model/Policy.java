@@ -3,7 +3,7 @@ package com.wipfli.insurancemanagement.model;
 import java.time.LocalDate;
 import java.util.Objects;
 
-public class Policy {
+public abstract class Policy {
 
     private final String policyNumber;
     private final PolicyOwner policyOwner;
@@ -23,12 +23,16 @@ public class Policy {
         this.status=PolicyStatus.ACTIVE;
 
     }
+    public Policy(String policyNumber, PolicyOwner policyOwner, VehicleType vehicleType, LocalDate startDate, int durationInYears) {
+
+        this(policyNumber, policyOwner, vehicleType, 0, startDate, durationInYears);
+    }
 
     public String getPolicyNumber() {
         return policyNumber;
     }
 
-    public PolicyOwner getCustomer() {
+    public PolicyOwner getPolicyOwner() {
         return policyOwner;
     }
 
@@ -38,6 +42,10 @@ public class Policy {
 
     public int getClaimCount() {
         return claimCount;
+    }
+
+    public PolicyStatus getStatus() {
+        return status;
     }
 
     public LocalDate getStartDate() {return startDate;}
@@ -81,4 +89,6 @@ public class Policy {
     public int hashCode() {
         return Objects.hash(policyNumber);
     }
+
+    public abstract String getPolicyDetails();
 }
