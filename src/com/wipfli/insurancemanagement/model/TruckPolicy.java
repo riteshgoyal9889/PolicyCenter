@@ -21,6 +21,7 @@ public class TruckPolicy extends Policy {
         return "Policy Number: " + getPolicyNumber()
                 + ", Owner: " + getPolicyOwner().getName()
                 + ", Status: " + getStatus()
+                + ", Vehicle Type: " + getVehicleType()
                 + ", Load Capacity: " + loadCapacityTons + " Tons"
                 + " claim count " + getClaimCount()
                 + ", Expiry Date: " + getExpiryDate();
