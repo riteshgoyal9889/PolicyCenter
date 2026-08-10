@@ -24,6 +24,7 @@ public class MainApp {
     }
 
     public void run() {
+
         seedData();
 
         while (true) {
@@ -169,7 +170,7 @@ public class MainApp {
             String policyNumber = readString(scanner, "Enter Policy Number: ");
             selectedPolicy = register.findByNumber(policyNumber);
             System.out.println("Policy Selected Successfully.");
-            System.out.println(selectedPolicy.getPolicyDetails());
+//            System.out.println(selectedPolicy.getPolicyDetails());
         } catch (PolicyNotFoundException e) {
             System.out.println(e.getClass().getSimpleName() + " : " + e.getMessage());
         }
