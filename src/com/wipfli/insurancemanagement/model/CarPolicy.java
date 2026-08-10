@@ -22,6 +22,7 @@ public class CarPolicy extends Policy {
                 + ", Owner: " + getPolicyOwner().getName() + "," +
                 " Status: " + getStatus() + "," +
                 " Registration Number: " + registrationNumber +
-                "claim count " + getClaimCount();
+                " claim count " + getClaimCount()
+                + ", Expiry Date: " + getExpiryDate();
     }
 }

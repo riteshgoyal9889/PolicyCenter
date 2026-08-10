@@ -1,6 +1,11 @@
 package com.wipfli.insurancemanagement.model;
 
+import com.wipfli.insurancemanagement.exception.IllegalStatusChangeException;
+import com.wipfli.insurancemanagement.exception.InvalidPolicyDataException;
+import com.wipfli.insurancemanagement.exception.RenewalNotAllowedException;
+
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
 public abstract class Policy {
@@ -11,7 +16,9 @@ public abstract class Policy {
     private  int claimCount;
     private final LocalDate startDate;
     private final double durationInYears;
+    private final LocalDate expiryDate;
     private PolicyStatus status;
+
 
     public Policy(String policyNumber, PolicyOwner policyOwner, VehicleType vehicleType, int claimCount, LocalDate startDate, double durationInYears) {
         this.policyNumber = policyNumber.trim();
@@ -20,6 +27,12 @@ public abstract class Policy {
         this.claimCount = claimCount;
         this.startDate = startDate;
         this.durationInYears = durationInYears;
+        this.expiryDate = startDate.plusYears((long) durationInYears);
+
+        if (expiryDate.isBefore(LocalDate.now())) {
+
+            throw new InvalidPolicyDataException(policyNumber, "Policy expiry date cannot be in the past.");
+        }
         this.status=PolicyStatus.ACTIVE;
 
     }
@@ -52,24 +65,44 @@ public abstract class Policy {
 
     public double getDurationInYears() {return durationInYears;}
 
+    public LocalDate getExpiryDate() {  return expiryDate;}
+
     public void recordClaim() { claimCount++;}
 
     public void expirePolicy() {
-        isPolicyActive();
-        status = PolicyStatus.EXPIRED;
-    }
-
-    public void renewPolicy() {
-        isPolicyActive();
-        status = PolicyStatus.RENEWED;
-    }
-
-    private void isPolicyActive() {
 
         if (status != PolicyStatus.ACTIVE) {
 
-            throw new IllegalStateException("Operation allowed only for ACTIVE policies.");
+            throw new IllegalStatusChangeException(
+                    policyNumber,
+                    "Policy "
+                            + policyNumber
+                            + " is currently "
+                            + status
+                            + " and cannot be expired."
+            );
         }
+
+        status = PolicyStatus.EXPIRED;
+    }
+
+    public void renewPolicy(LocalDate today) {
+        if (status != PolicyStatus.ACTIVE) {
+            throw new IllegalStatusChangeException(policyNumber,
+                    "Policy " + policyNumber
+                            + " is currently " + status
+                            + " and cannot be renewed.");
+        }
+        long daysToExpiry = ChronoUnit.DAYS.between(today,expiryDate);
+
+        if (daysToExpiry > 30)
+        {throw new RenewalNotAllowedException(policyNumber, "Renewal requested " + (daysToExpiry - 30)
+                + " days too early.");
+        }
+        if (claimCount >= 3) {
+            throw new RenewalNotAllowedException(policyNumber, "Policy has 3 or more claims. Refer to underwriting.");
+        }
+        status = PolicyStatus.RENEWED;
     }
 
     @Override

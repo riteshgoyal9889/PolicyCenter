@@ -16,21 +16,15 @@ public class NoClaimBonusCalculator implements PremiumCalculable {
         if (policy == null) {
             throw new IllegalArgumentException("Policy cannot be null.");
         }
-
         double basePremium = policy.getVehicleType().getBasePremium();
-
         double premium = basePremium;
 
-
         premium += calculateAgeLoading(policy.getPolicyOwner().getAge(), basePremium);
-
         premium += calculateClaimLoading(policy.getClaimCount());
 
         if (hasNoClaims(policy)) {
-            premium -= premium *
-                    NO_CLAIM_DISCOUNT;
+            premium -= premium * NO_CLAIM_DISCOUNT;
         }
-
         return premium;
     }
     private double calculateAgeLoading(int age, double basePremium) {
@@ -38,10 +32,8 @@ public class NoClaimBonusCalculator implements PremiumCalculable {
         if (isYoungDriver(age)) {
             return basePremium * YOUNG_DRIVER_LOADING_RATE;
         }
-
         return basePremium * REGULAR_DRIVER_LOADING_RATE;
     }
-
     private boolean isYoungDriver(int age) {
         return age < YOUNG_DRIVER_AGE_LIMIT;
     }
