@@ -9,14 +9,19 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Scanner;
 
 public class MainApp {
 
+    private static final LocalDate REFERENCE_DATE = LocalDate.of(2026, 8, 9);
     private final Scanner scanner = new Scanner(System.in);
     private final PolicyRegister register = new PolicyRegister();
     private final PolicyValidator validator = new PolicyValidator();
+    private final PremiumCalculable premiumCalculator = new NoClaimBonusCalculator();;
     private Policy selectedPolicy;
+
+
 
     public static void main(String[] args) {
 
@@ -24,8 +29,7 @@ public class MainApp {
     }
 
     public void run() {
-
-        seedData();
+        seedSampleData();
 
         while (true) {
             printMenu();
@@ -55,49 +59,59 @@ public class MainApp {
                     break;
 
                 case 7:
-                    handleShowPolicyDetails();
+                    handleFindPolicyByNumberUsingStream();
                     break;
 
                 case 8:
-                    handleViewByCustomer();
+                    handleFindPoliciesByCustomerUsingStream();
+                   
                     break;
 
                 case 9:
-                    handleViewByVehicleType();
+                    handleTotalPremiumByVehicleTypeUsingStream();
                     break;
-
+//new
                 case 10:
-                    handleViewExpiringSoon();
+                    handlePolicyCountByVehicleTypeUsingStream();
                     break;
 
                 case 11:
-                    handleViewSummary();
+                    handleExpiringPoliciesUsingStream();
                     break;
 
                 case 12:
-                    return;
+                    handleCustomerWithMostPoliciesUsingStream();
+                    break;
 
+                case 13:
+                    handleTopFiveHighestPremiumPoliciesUsingStream();
+                    break;
+                case 14:
+                    return;
                 default:
                     System.out.println("Invalid choice.");
             }
         }
     }
-    private void seedData() {
+    private void seedSampleData() {
+        try {
+            PolicyOwner ravi = new PolicyOwner("Ravi", 22);
+            PolicyOwner meena = new PolicyOwner("Meena", 34);
+            PolicyOwner ajay = new PolicyOwner("Ajay", 41);
+            PolicyOwner sneha = new PolicyOwner("Sneha", 29);
 
-        PolicyOwner ritesh = new PolicyOwner("Ritesh", 25);
-        PolicyOwner amit = new PolicyOwner("Amit", 30);
-        PolicyOwner rahul = new PolicyOwner("Rahul", 35);
-        PolicyOwner sneha = new PolicyOwner("Sneha", 28);
+            register.add(new CarPolicy("POL-2001", ravi, VehicleType.CAR, 1, LocalDate.of(2026, 8, 15),1,"MH12AB9889"));
+            register.add(new TruckPolicy("POL-2002", ravi, VehicleType.TRUCK, 0, LocalDate.of(2026, 9, 1),1,5000));
+            register.add(new BikePolicy("POL-2003", meena, VehicleType.BIKE, 2, LocalDate.of(2026, 8, 20),1,500));
+            register.add(new CarPolicy("POL-2004", ajay, VehicleType.CAR, 0, LocalDate.of(2027, 1, 10),1,"MH12AB7887"));
+            register.add(new BikePolicy("POL-2005", sneha, VehicleType.BIKE, 0, LocalDate.of(2026, 8, 25),1,200));
+            register.add(new CarPolicy("POL-2006", ravi, VehicleType.CAR, 3, LocalDate.of(2026, 12, 1),1,"MH12AB1235"));
 
-        register.add(new CarPolicy("POL-101",ritesh, VehicleType.CAR, 0,  LocalDate.now(), 1, "MH12AB1234"));
-        register.add(new BikePolicy("POL-102", ritesh,  VehicleType.BIKE, 1, LocalDate.now(), 2, 200));
-
-        register.add(new TruckPolicy("POL-103", amit, VehicleType.TRUCK,0, LocalDate.now(), 1, 12));
-        register.add(new CarPolicy("POL-104", rahul, VehicleType.CAR, 2, LocalDate.now(), 3, "MH14XY9999"));
-        register.add(new BikePolicy("POL-105", sneha, VehicleType.BIKE, 0, LocalDate.now(), 1, 150));
-        register.add(new TruckPolicy("POL-106", sneha, VehicleType.TRUCK, 1, LocalDate.now(), 2, 15));
-        System.out.println("6 sample policies loaded successfully.");
+        } catch (PolicyBusinessException exception) {
+            System.out.println("Error while loading sample data: " + exception.getMessage());
+        }
     }
+
     private void printMenu() {
         System.out.println("\n===== POLICY MANAGEMENT SYSTEM =====");
 
@@ -107,12 +121,14 @@ public class MainApp {
         System.out.println("4. Expire Policy");
         System.out.println("5. Renew Policy");
         System.out.println("6. Record Claim");
-        System.out.println("7. Show Policy Details");
-        System.out.println("8. View Policies By Customer");
-        System.out.println("9. View Policies By Vehicle Type");
-        System.out.println("10. View Policies Expiring Soon");
-        System.out.println("11. View Premium Summary");
-        System.out.println("12. Exit");
+        System.out.println("7. Find Policy By Number Using Stream");
+        System.out.println("8. Find Policies By Customer Using Stream");
+        System.out.println("9. Total Premium By Vehicle Type Using Stream");
+        System.out.println("10. Count Policies By Vehicle Type Using Stream");
+        System.out.println("11. Find Policies Expiring Soon Using Stream");
+        System.out.println("12. Find Customer With Most Policies Using Stream");
+        System.out.println("13. Top 5 Highest Premium Policies Using Stream");
+        System.out.println("14. Exit");
     }
     private void handleAddPolicy() {
         try {
@@ -170,7 +186,6 @@ public class MainApp {
             String policyNumber = readString(scanner, "Enter Policy Number: ");
             selectedPolicy = register.findByNumber(policyNumber);
             System.out.println("Policy Selected Successfully.");
-//            System.out.println(selectedPolicy.getPolicyDetails());
         } catch (PolicyNotFoundException e) {
             System.out.println(e.getClass().getSimpleName() + " : " + e.getMessage());
         }
@@ -239,16 +254,126 @@ public class MainApp {
         }
     }
 
-    private void handleShowPolicyDetails() {
+    private void handleFindPolicyByNumberUsingStream() {
 
-        if (selectedPolicy == null) {
-            System.out.println("Please select a policy first.");
-            return;
-        }
-        System.out.println();
-        System.out.println(selectedPolicy.getPolicyDetails());
+            String policyNumber = readString(scanner,"Enter Policy Number: ");
+            Optional<Policy> optionalPolicy = register.findByPolicyNumberUsingStream(policyNumber);
+            if(optionalPolicy.isPresent()){
+                System.out.println("Policy found: " + optionalPolicy.get().getPolicyDetails());
+            }
+            else{
+                System.out.println("No policy found with number: "+ policyNumber);
+
+            }
     }
 
+    private void handleFindPoliciesByCustomerUsingStream() {
+        try {
+            String customerName = readString(scanner,"Enter Customer Name: ");
+
+            List<Policy> policies = register.findPoliciesByCustomerNameUsingStream(customerName);
+
+            if (policies.isEmpty()) {
+                System.out.println("No policies found for customer: " + customerName);
+                return;
+            }
+            System.out.println("Policies for customer: " + customerName);
+            policies.forEach(System.out::println);
+
+        } catch (Exception exception) {
+            System.out.println("Error while finding customer policies: " + exception.getMessage());
+        }
+    }
+
+    private void handleTotalPremiumByVehicleTypeUsingStream() {
+        try {
+
+            System.out.println("\nTotal Premium By Vehicle Type");
+
+            for (VehicleType vehicleType : VehicleType.values()) {
+
+                double totalPremium = register.calculateTotalPremiumByVehicleTypeUsingStream(vehicleType,premiumCalculator);
+
+                System.out.println(vehicleType + " : " + totalPremium);
+            }
+        } catch (Exception exception) {
+            System.out.println("Error while calculating total premium: "
+                    + exception.getMessage());
+        }
+    }
+
+    private void handlePolicyCountByVehicleTypeUsingStream() {
+        try {
+            Map<VehicleType, Long> policyCountMap = register.countPoliciesByVehicleTypeUsingStream();
+
+            if (policyCountMap.isEmpty()) {
+                System.out.println("No policies available.");
+                return;
+            }
+            System.out.println("Policy count by vehicle type:");
+
+            policyCountMap.forEach((vehicleType, count) -> System.out.println(vehicleType + " : " + count));
+
+        } catch (Exception exception) {
+            System.out.println("Error while counting policies: " + exception.getMessage());
+        }
+    }
+    private void handleExpiringPoliciesUsingStream() {
+        try {
+            int days = readInt(scanner,"Enter number of days: ");
+
+            List<Policy> expiringPolicies =
+                    register.findPoliciesExpiringWithinUsingStream(days, REFERENCE_DATE);
+
+            if (expiringPolicies.isEmpty()) {
+                System.out.println("No policies expiring within " + days + " days.");
+                return;
+            }
+
+            System.out.println("Policies expiring within " + days + " days from " + REFERENCE_DATE + ":");
+            expiringPolicies.forEach(System.out::println);
+
+        } catch (Exception exception) {
+            System.out.println("Error while finding expiring policies: " + exception.getMessage());
+        }
+    }
+
+    private void handleCustomerWithMostPoliciesUsingStream() {
+        try {
+            String result = register.findCustomerWithMostPoliciesUsingStream()
+                    .map(customerName -> "Customer with most policies: " + customerName)
+                    .orElse("No policies available.");
+
+            System.out.println(result);
+
+        } catch (Exception exception) {
+            System.out.println("Error while finding customer with most policies: " + exception.getMessage());
+        }
+    }
+
+    private void handleTopFiveHighestPremiumPoliciesUsingStream() {
+        try {
+            List<Policy> topPolicies = register.findTopFiveHighestPremiumPoliciesUsingStream(premiumCalculator);
+
+            if (topPolicies.isEmpty()) {
+                System.out.println("No policies available.");
+                return;
+            }
+            System.out.println("Top 5 highest premium policies:");
+
+            topPolicies.forEach(policy -> {
+                double premium = premiumCalculator.calculatePremium(policy);
+                System.out.println("Policy Number: " + policy.getPolicyNumber()
+                                + " | Customer: " + policy.getPolicyOwner().getName()
+                                + " | Vehicle Type: " + policy.getVehicleType()
+                                + " | Premium: " + premium
+                );
+            });
+
+        } catch (Exception exception) {
+            System.out.println("Error while finding top premium policies: " + exception.getMessage());
+        }
+    }
     private void handleViewByCustomer() {
 
         try {

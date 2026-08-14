@@ -6,10 +6,13 @@ import com.wipfli.insurancemanagement.model.Policy;
 import com.wipfli.insurancemanagement.model.VehicleType;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.EnumMap;
 import java.util.TreeMap;
 
@@ -45,6 +48,64 @@ public class PolicyRegister {
         }
         policiesByExpiryDate.get(expiryDate).add(policy);
     }
+    public Optional<Policy> findByPolicyNumberUsingStream(String policyNumber) {
+        return policiesByNumber.values()
+                .stream()
+                .filter(policy -> policy.getPolicyNumber().equalsIgnoreCase(policyNumber))
+                .findFirst();
+    }
+    public List<Policy> findPoliciesByCustomerNameUsingStream(String customerName) {
+        return policiesByNumber.values()
+                .stream()
+                .filter(policy -> policy.getPolicyOwner().getName().equalsIgnoreCase(customerName))
+                .collect(Collectors.toList());
+    }
+    public double calculateTotalPremiumByVehicleTypeUsingStream(VehicleType vehicleType, PremiumCalculable premiumCalculator) {
+        return policiesByNumber.values()
+                .stream()
+                .filter(policy -> policy.getVehicleType() == vehicleType)
+                .mapToDouble(premiumCalculator::calculatePremium)
+                .sum();
+    }
+    public Map<VehicleType, Long> countPoliciesByVehicleTypeUsingStream() {
+        return policiesByNumber.values()
+                .stream()
+                .collect(Collectors.groupingBy(Policy::getVehicleType, Collectors.counting()));
+    }
+    public List<Policy> findPoliciesExpiringWithinUsingStream(int days, LocalDate referenceDate) {
+        LocalDate limitDate = referenceDate.plusDays(days);
+
+        return policiesByNumber.values()
+                .stream()
+                .filter(policy -> !policy.getExpiryDate().isBefore(referenceDate))
+                .filter(policy -> !policy.getExpiryDate().isAfter(limitDate))
+                .sorted(Comparator.comparing(Policy::getExpiryDate))
+                .collect(Collectors.toList());
+    }
+    public Optional<String> findCustomerWithMostPoliciesUsingStream() {
+        return policiesByNumber.values()
+                .stream()
+                .collect(Collectors.groupingBy(
+                        policy -> policy.getPolicyOwner().getName(),
+                        Collectors.counting()
+                ))
+                .entrySet()
+                .stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey);
+    }
+
+    public List<Policy> findTopFiveHighestPremiumPoliciesUsingStream(
+            PremiumCalculable premiumCalculator
+    ) {
+        return policiesByNumber.values()
+                .stream()
+                .sorted(Comparator.comparingDouble(
+                        (Policy policy) -> premiumCalculator.calculatePremium(policy)
+                ).reversed())
+                .limit(5)
+                .collect(Collectors.toList());
+    }
 
     public Policy findByNumber(String policyNumber) throws PolicyNotFoundException {
         Policy policy = policiesByNumber.get(policyNumber);
@@ -63,7 +124,6 @@ public class PolicyRegister {
         }
         return policies;
     }
-
     public List<Policy> findByVehicleType(VehicleType vehicleType) {
 
         List<Policy> policies = policiesByVehicleType.get(vehicleType);
