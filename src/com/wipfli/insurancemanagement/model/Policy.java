@@ -122,6 +122,11 @@ public abstract class Policy {
     public int hashCode() {
         return Objects.hash(policyNumber);
     }
+    @Override
+
+    public String toString() {
+        return getPolicyDetails();
+    }
 
     public abstract String getPolicyDetails();
 }
