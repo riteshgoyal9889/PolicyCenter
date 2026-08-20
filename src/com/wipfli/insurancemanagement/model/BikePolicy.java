@@ -17,13 +17,12 @@ public class BikePolicy extends Policy {
     @Override
     public String getPolicyDetails() {
 
-        return "Policy Number: "
-                + getPolicyNumber()
-                + ", Owner: "
-                + getPolicyOwner().getName()
-                + ", Status: "
-                + getStatus()
-                + ", Engine CC: "
-                + engineCC;
+        return "Policy Number: " + getPolicyNumber()
+                + ", Owner: " + getPolicyOwner().getName()
+                + ", Status: " + getStatus()
+                + ", Vehicle Type: " + getVehicleType()
+                + ", Engine CC: " + engineCC
+                + ", claim count " + getClaimCount()
+                + ", Expiry Date: " + getExpiryDate();
     }
 }
