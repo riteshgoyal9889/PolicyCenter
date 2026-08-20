@@ -6,7 +6,6 @@ import com.wipfli.insurancemanagement.exception.*;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -18,7 +17,7 @@ public class MainApp {
     private final Scanner scanner = new Scanner(System.in);
     private final PolicyRegister register = new PolicyRegister();
     private final PolicyValidator validator = new PolicyValidator();
-    private final PremiumCalculable premiumCalculator = new NoClaimBonusCalculator();;
+    private final PremiumCalculable premiumCalculator = new NoClaimBonusCalculator();
     private Policy selectedPolicy;
 
 
@@ -93,6 +92,7 @@ public class MainApp {
             }
         }
     }
+
     private void seedSampleData() {
         try {
             PolicyOwner ravi = new PolicyOwner("Ravi", 22);
@@ -111,6 +111,7 @@ public class MainApp {
             System.out.println("Error while loading sample data: " + exception.getMessage());
         }
     }
+
 
     private void printMenu() {
         System.out.println("\n===== POLICY MANAGEMENT SYSTEM =====");
@@ -341,7 +342,7 @@ public class MainApp {
     private void handleCustomerWithMostPoliciesUsingStream() {
         try {
             String result = register.findCustomerWithMostPoliciesUsingStream()
-                    .map(customerName -> "Customer with most policies: " + customerName)
+                    .map(customerName -> "Customer with most policies: " + customerName + " with a policy of " + register.findPoliciesByCustomerNameUsingStream(customerName).size())
                     .orElse("No policies available.");
 
             System.out.println(result);

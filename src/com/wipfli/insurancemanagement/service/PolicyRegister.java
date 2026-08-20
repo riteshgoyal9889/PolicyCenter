@@ -16,6 +16,8 @@ import java.util.stream.Collectors;
 import java.util.EnumMap;
 import java.util.TreeMap;
 
+import static java.util.stream.Collectors.toList;
+
 public class PolicyRegister {
 
     private final Map<String, Policy> policiesByNumber = new HashMap<>();
@@ -58,7 +60,7 @@ public class PolicyRegister {
         return policiesByNumber.values()
                 .stream()
                 .filter(policy -> policy.getPolicyOwner().getName().equalsIgnoreCase(customerName))
-                .collect(Collectors.toList());
+                .collect(toList());
     }
     public double calculateTotalPremiumByVehicleTypeUsingStream(VehicleType vehicleType, PremiumCalculable premiumCalculator) {
         return policiesByNumber.values()
@@ -80,7 +82,7 @@ public class PolicyRegister {
                 .filter(policy -> !policy.getExpiryDate().isBefore(referenceDate))
                 .filter(policy -> !policy.getExpiryDate().isAfter(limitDate))
                 .sorted(Comparator.comparing(Policy::getExpiryDate))
-                .collect(Collectors.toList());
+                .toList();
     }
     public Optional<String> findCustomerWithMostPoliciesUsingStream() {
         return policiesByNumber.values()
@@ -104,7 +106,7 @@ public class PolicyRegister {
                         (Policy policy) -> premiumCalculator.calculatePremium(policy)
                 ).reversed())
                 .limit(5)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public Policy findByNumber(String policyNumber) throws PolicyNotFoundException {
