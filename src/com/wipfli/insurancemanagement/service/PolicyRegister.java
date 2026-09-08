@@ -1,7 +1,6 @@
 package com.wipfli.insurancemanagement.service;
 
 import com.wipfli.insurancemanagement.exception.DuplicatePolicyNumberException;
-import com.wipfli.insurancemanagement.exception.PolicyNotFoundException;
 import com.wipfli.insurancemanagement.model.Policy;
 import com.wipfli.insurancemanagement.model.VehicleType;
 
@@ -50,31 +49,31 @@ public class PolicyRegister {
         }
         policiesByExpiryDate.get(expiryDate).add(policy);
     }
-    public Optional<Policy> findByPolicyNumberUsingStream(String policyNumber) {
+    public Optional<Policy> findByPolicyNumber(String policyNumber) {
         return policiesByNumber.values()
                 .stream()
                 .filter(policy -> policy.getPolicyNumber().equalsIgnoreCase(policyNumber))
                 .findFirst();
     }
-    public List<Policy> findPoliciesByCustomerNameUsingStream(String customerName) {
+    public List<Policy> findPoliciesByCustomerName(String customerName) {
         return policiesByNumber.values()
                 .stream()
                 .filter(policy -> policy.getPolicyOwner().getName().equalsIgnoreCase(customerName))
                 .collect(toList());
     }
-    public double calculateTotalPremiumByVehicleTypeUsingStream(VehicleType vehicleType, PremiumCalculable premiumCalculator) {
+    public double calculateTotalPremiumByVehicleType(VehicleType vehicleType, PremiumCalculable premiumCalculator) {
         return policiesByNumber.values()
                 .stream()
                 .filter(policy -> policy.getVehicleType() == vehicleType)
                 .mapToDouble(premiumCalculator::calculatePremium)
                 .sum();
     }
-    public Map<VehicleType, Long> countPoliciesByVehicleTypeUsingStream() {
+    public Map<VehicleType, Long> countPoliciesByVehicleType() {
         return policiesByNumber.values()
                 .stream()
                 .collect(Collectors.groupingBy(Policy::getVehicleType, Collectors.counting()));
     }
-    public List<Policy> findPoliciesExpiringWithinUsingStream(int days, LocalDate referenceDate) {
+    public List<Policy> findPoliciesExpiringWithin(int days, LocalDate referenceDate) {
         LocalDate limitDate = referenceDate.plusDays(days);
 
         return policiesByNumber.values()
@@ -109,23 +108,6 @@ public class PolicyRegister {
                 .toList();
     }
 
-    public Policy findByNumber(String policyNumber) throws PolicyNotFoundException {
-        Policy policy = policiesByNumber.get(policyNumber);
-
-        if (policy == null) {
-            throw new PolicyNotFoundException("Policy "+ policyNumber+ " not found.");
-        }
-        return policy;
-    }
-    public List<Policy> findByCustomer(String customerName) {
-
-        List<Policy> policies = policiesByCustomer.get(customerName);
-
-        if (policies == null) {
-            return new ArrayList<>();
-        }
-        return policies;
-    }
     public List<Policy> findByVehicleType(VehicleType vehicleType) {
 
         List<Policy> policies = policiesByVehicleType.get(vehicleType);
@@ -135,30 +117,5 @@ public class PolicyRegister {
         return policies;
     }
 
-    public List<Policy> findExpiringWithin(int days, LocalDate today) {
 
-        List<Policy> result = new ArrayList<>();
-        LocalDate limitDate = today.plusDays(days);
-        for (List<Policy> policies : policiesByExpiryDate.subMap(today, true, limitDate, true).values()) {
-            result.addAll(policies);
-        }
-        return result;
-    }
-
-    public Map<VehicleType, Double> totalPremiumByVehicleType() {
-
-        Map<VehicleType, Double> summary = new HashMap<>();
-        PremiumCalculable calculator = new StandardPremiumCalculator();
-
-        for (VehicleType vehicleType : policiesByVehicleType.keySet()) {
-            double totalPremium = 0.0;
-            List<Policy> policies = policiesByVehicleType.get(vehicleType);
-
-            for (Policy policy : policies) {
-                totalPremium += calculator.calculatePremium(policy);
-            }
-            summary.put(vehicleType, totalPremium);
-        }
-        return summary;
-    }
 }

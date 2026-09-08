@@ -185,7 +185,7 @@ public class MainApp {
 
         try {
             String policyNumber = readString(scanner, "Enter Policy Number: ");
-            selectedPolicy = register.findByNumber(policyNumber);
+            selectedPolicy = register.findByPolicyNumber(policyNumber).orElseThrow(() -> new PolicyNotFoundException("Policy not found: " + policyNumber));
             System.out.println("Policy Selected Successfully.");
         } catch (PolicyNotFoundException e) {
             System.out.println(e.getClass().getSimpleName() + " : " + e.getMessage());
@@ -258,7 +258,7 @@ public class MainApp {
     private void handleFindPolicyByNumberUsingStream() {
 
             String policyNumber = readString(scanner,"Enter Policy Number: ");
-            Optional<Policy> optionalPolicy = register.findByPolicyNumberUsingStream(policyNumber);
+            Optional<Policy> optionalPolicy = register.findByPolicyNumber(policyNumber);
             if(optionalPolicy.isPresent()){
                 System.out.println("Policy found: " + optionalPolicy.get().getPolicyDetails());
             }
@@ -272,7 +272,7 @@ public class MainApp {
         try {
             String customerName = readString(scanner,"Enter Customer Name: ");
 
-            List<Policy> policies = register.findPoliciesByCustomerNameUsingStream(customerName);
+            List<Policy> policies = register.findPoliciesByCustomerName(customerName);
 
             if (policies.isEmpty()) {
                 System.out.println("No policies found for customer: " + customerName);
@@ -293,7 +293,7 @@ public class MainApp {
 
             for (VehicleType vehicleType : VehicleType.values()) {
 
-                double totalPremium = register.calculateTotalPremiumByVehicleTypeUsingStream(vehicleType,premiumCalculator);
+                double totalPremium = register.calculateTotalPremiumByVehicleType(vehicleType,premiumCalculator);
 
                 System.out.println(vehicleType + " : " + totalPremium);
             }
@@ -305,7 +305,7 @@ public class MainApp {
 
     private void handlePolicyCountByVehicleTypeUsingStream() {
         try {
-            Map<VehicleType, Long> policyCountMap = register.countPoliciesByVehicleTypeUsingStream();
+            Map<VehicleType, Long> policyCountMap = register.countPoliciesByVehicleType();
 
             if (policyCountMap.isEmpty()) {
                 System.out.println("No policies available.");
@@ -324,7 +324,7 @@ public class MainApp {
             int days = readInt(scanner,"Enter number of days: ");
 
             List<Policy> expiringPolicies =
-                    register.findPoliciesExpiringWithinUsingStream(days, REFERENCE_DATE);
+                    register.findPoliciesExpiringWithin(days, REFERENCE_DATE);
 
             if (expiringPolicies.isEmpty()) {
                 System.out.println("No policies expiring within " + days + " days.");
@@ -342,7 +342,7 @@ public class MainApp {
     private void handleCustomerWithMostPoliciesUsingStream() {
         try {
             String result = register.findCustomerWithMostPoliciesUsingStream()
-                    .map(customerName -> "Customer with most policies: " + customerName + " with a policy of " + register.findPoliciesByCustomerNameUsingStream(customerName).size())
+                    .map(customerName -> "Customer with most policies: " + customerName + " with a policy of " + register.findPoliciesByCustomerName(customerName).size())
                     .orElse("No policies available.");
 
             System.out.println(result);
@@ -375,89 +375,7 @@ public class MainApp {
             System.out.println("Error while finding top premium policies: " + exception.getMessage());
         }
     }
-    private void handleViewByCustomer() {
 
-        try {
-            String customerName = readString(scanner, "Enter Customer Name: ");
-            List<Policy> customerPolicies = register.findByCustomer(customerName);
-
-            if (customerPolicies.isEmpty()) {
-                System.out.println("No policies found for customer " + customerName);
-                return;
-            }
-            System.out.println();
-            System.out.println("===== POLICIES FOR " + customerName.toUpperCase() + " =====");
-
-            for (Policy policy : customerPolicies) {
-                System.out.println(policy.getPolicyDetails());
-            }
-        } catch (PolicyBusinessException e) {
-            System.out.println(e.getClass().getSimpleName() + " : " + e.getMessage());
-        }
-    }
-
-    private void handleViewByVehicleType() {
-
-        try {
-            VehicleType vehicleType = readVehicleType(scanner);
-            List<Policy> policies = register.findByVehicleType(vehicleType);
-
-            if (policies.isEmpty()) {
-                System.out.println("No policies found for " + vehicleType);
-                return;
-            }
-
-            System.out.println();
-            System.out.println("===== " + vehicleType + " POLICIES =====");
-
-            for (Policy policy : policies) {
-                System.out.println(policy.getPolicyDetails());
-            }
-
-        } catch (PolicyBusinessException e) {
-            System.out.println(e.getClass().getSimpleName() + " : " + e.getMessage());
-        }
-    }
-
-    private void handleViewExpiringSoon() {
-
-        try {
-            int days = readInt(scanner, "Enter number of days: ");
-            List<Policy> policies = register.findExpiringWithin(days, LocalDate.now());
-
-            if (policies.isEmpty()) {
-                System.out.println("No policies expiring within " + days + " days.");
-                return;
-            }
-            System.out.println();
-            System.out.println("===== POLICIES EXPIRING WITHIN " + days + " DAYS =====");
-
-            for (Policy policy : policies) {
-                System.out.println(policy.getPolicyDetails());
-            }
-        } catch (PolicyBusinessException e) {
-            System.out.println(e.getClass().getSimpleName() + " : " + e.getMessage());
-        }
-    }
-
-    private void handleViewSummary() {
-
-        try {
-            Map<VehicleType, Double> summary = register.totalPremiumByVehicleType();
-            if (summary.isEmpty()) {
-                System.out.println("No policies available.");
-                return;
-            }
-            System.out.println();
-            System.out.println("===== PREMIUM SUMMARY =====");
-            for (VehicleType vehicleType : summary.keySet()) {
-
-                System.out.println(vehicleType + " : " + summary.get(vehicleType));
-            }
-        } catch (PolicyBusinessException e) {
-            System.out.println(e.getClass().getSimpleName() + " : " + e.getMessage());
-        }
-    }
 
     private static String readString(Scanner scanner, String message) {
 
