@@ -19,11 +19,17 @@ import static java.util.stream.Collectors.toList;
 
 public class PolicyRegister {
 
+
     private final Map<String, Policy> policiesByNumber = new HashMap<>();
     private final Map<String, List<Policy>> policiesByCustomer = new HashMap<>();
     private final Map<VehicleType, List<Policy>> policiesByVehicleType =new EnumMap<>(VehicleType.class);
     private final TreeMap<LocalDate, List<Policy>> policiesByExpiryDate = new TreeMap<>();
 
+    private final PremiumCalculable premiumCalculator;
+
+    public PolicyRegister(PremiumCalculable premiumCalculator) {
+        this.premiumCalculator = premiumCalculator;
+    }
     public void add(Policy policy) {
 
         if (policiesByNumber.containsKey(policy.getPolicyNumber())) {
@@ -61,7 +67,7 @@ public class PolicyRegister {
                 .filter(policy -> policy.getPolicyOwner().getName().equalsIgnoreCase(customerName))
                 .collect(toList());
     }
-    public double calculateTotalPremiumByVehicleType(VehicleType vehicleType, PremiumCalculable premiumCalculator) {
+    public double calculateTotalPremiumByVehicleType(VehicleType vehicleType) {
         return policiesByNumber.values()
                 .stream()
                 .filter(policy -> policy.getVehicleType() == vehicleType)
@@ -96,9 +102,7 @@ public class PolicyRegister {
                 .map(Map.Entry::getKey);
     }
 
-    public List<Policy> findTopFiveHighestPremiumPoliciesUsingStream(
-            PremiumCalculable premiumCalculator
-    ) {
+    public List<Policy> findTopFiveHighestPremiumPoliciesUsingStream() {
         return policiesByNumber.values()
                 .stream()
                 .sorted(Comparator.comparingDouble(

@@ -15,15 +15,12 @@ public class MainApp {
 
     private static final LocalDate REFERENCE_DATE = LocalDate.of(2026, 8, 9);
     private final Scanner scanner = new Scanner(System.in);
-    private final PolicyRegister register = new PolicyRegister();
+    private final PremiumCalculable premiumCalculator = new NoClaimBonusCalculator(new StandardPremiumCalculator());
+    private final PolicyRegister register = new PolicyRegister(premiumCalculator);
     private final PolicyValidator validator = new PolicyValidator();
-    private final PremiumCalculable premiumCalculator = new NoClaimBonusCalculator();
     private Policy selectedPolicy;
 
-
-
     public static void main(String[] args) {
-
         new MainApp().run();
     }
 
@@ -40,48 +37,36 @@ public class MainApp {
                 case 2:
                     handleSelectPolicy();
                     break;
-
                 case 3:
                     handleCalculatePremium();
                     break;
-
                 case 4:
                     handleExpirePolicy();
                     break;
-
                 case 5:
                     handleRenewPolicy();
                     break;
-
                 case 6:
                     handleRecordClaim();
                     break;
-
                 case 7:
                     handleFindPolicyByNumberUsingStream();
                     break;
-
                 case 8:
                     handleFindPoliciesByCustomerUsingStream();
-                   
                     break;
-
                 case 9:
                     handleTotalPremiumByVehicleTypeUsingStream();
                     break;
-//new
                 case 10:
                     handlePolicyCountByVehicleTypeUsingStream();
                     break;
-
                 case 11:
                     handleExpiringPoliciesUsingStream();
                     break;
-
                 case 12:
                     handleCustomerWithMostPoliciesUsingStream();
                     break;
-
                 case 13:
                     handleTopFiveHighestPremiumPoliciesUsingStream();
                     break;
@@ -100,22 +85,21 @@ public class MainApp {
             PolicyOwner ajay = new PolicyOwner("Ajay", 41);
             PolicyOwner sneha = new PolicyOwner("Sneha", 29);
 
-            register.add(new CarPolicy("POL-2001", ravi, VehicleType.CAR, 1, LocalDate.of(2026, 8, 15),1,"MH12AB9889"));
-            register.add(new TruckPolicy("POL-2002", ravi, VehicleType.TRUCK, 0, LocalDate.of(2026, 9, 1),1,5000));
-            register.add(new BikePolicy("POL-2003", meena, VehicleType.BIKE, 2, LocalDate.of(2026, 8, 20),1,500));
-            register.add(new CarPolicy("POL-2004", ajay, VehicleType.CAR, 0, LocalDate.of(2027, 1, 10),1,"MH12AB7887"));
-            register.add(new BikePolicy("POL-2005", sneha, VehicleType.BIKE, 0, LocalDate.of(2026, 8, 25),1,200));
-            register.add(new CarPolicy("POL-2006", ravi, VehicleType.CAR, 3, LocalDate.of(2026, 12, 1),1,"MH12AB1235"));
+            register.add(PolicyFactory.createCarPolicy("POL-2001", ravi, VehicleType.CAR, 1, LocalDate.of(2026, 8, 15),1,"MH12AB9889"));
+            register.add(PolicyFactory.createTruckPolicy("POL-2002", ravi, VehicleType.TRUCK, 0, LocalDate.of(2026, 9, 1),1,5000));
+            register.add(PolicyFactory.createBikePolicy("POL-2003", meena, VehicleType.BIKE, 2, LocalDate.of(2026, 8, 20),1,500));
+            register.add(PolicyFactory.createCarPolicy("POL-2004", ajay, VehicleType.CAR, 0, LocalDate.of(2027, 1, 10),1,"MH12AB7887"));
+            register.add(PolicyFactory.createBikePolicy("POL-2005", sneha, VehicleType.BIKE, 0, LocalDate.of(2026, 8, 25),1,200));
+            register.add(PolicyFactory.createCarPolicy("POL-2006", ravi, VehicleType.CAR, 3, LocalDate.of(2026, 12, 1),1,"MH12AB1235"));
 
         } catch (PolicyBusinessException exception) {
             System.out.println("Error while loading sample data: " + exception.getMessage());
         }
     }
 
-
     private void printMenu() {
-        System.out.println("\n===== POLICY MANAGEMENT SYSTEM =====");
 
+        System.out.println("\n===== POLICY MANAGEMENT SYSTEM =====");
         System.out.println("1. Add Policy");
         System.out.println("2. Select Policy");
         System.out.println("3. Calculate Premium");
@@ -135,13 +119,11 @@ public class MainApp {
         try {
             String customerName = readCustomerName(scanner,validator);
             int customerAge = readCustomerAge(scanner, validator);
-
             PolicyOwner policyOwner = new PolicyOwner(customerName, customerAge);
 
             String policyNumber = readString(scanner, "Enter policy number: ");
             validator.validatePolicyNumber(policyNumber);
             VehicleType vehicleType = readVehicleType(scanner);
-
             int claimCount = readClaimCount(scanner, validator,policyNumber);
             LocalDate startDate = readDate(scanner, "Enter policy start date yyyy-mm-dd: ");
             int duration = readInt(scanner, "Enter policy duration in years: ");
@@ -153,19 +135,19 @@ public class MainApp {
                 case CAR:
                     String registrationNumber = readString( scanner,"Enter Registration Number: ");
                     System.out.println("-----Policy for CAR-----");
-                    policy = new CarPolicy(policyNumber,policyOwner,vehicleType,claimCount,startDate,duration, registrationNumber);
+                    policy = PolicyFactory.createCarPolicy(policyNumber,policyOwner,vehicleType,claimCount,startDate,duration, registrationNumber);
                     break;
 
                 case BIKE:
                     int engineCC = readInt(scanner, "Enter Engine CC: ");
                     System.out.println("-----Policy for BIKE-----");
-                    policy = new BikePolicy(policyNumber, policyOwner, vehicleType, claimCount, startDate, duration, engineCC);
+                    policy = PolicyFactory.createBikePolicy(policyNumber,policyOwner,vehicleType,claimCount,startDate,duration, engineCC);
                     break;
 
                 case TRUCK:
                     double loadCapacity = readDouble(scanner, "Enter Load Capacity: ");
                     System.out.println("-----Policy for TRUCK-----");
-                    policy = new TruckPolicy(policyNumber, policyOwner, vehicleType, claimCount, startDate, duration, loadCapacity);
+                    policy = PolicyFactory.createTruckPolicy(policyNumber,policyOwner,vehicleType,claimCount,startDate,duration, loadCapacity);
                     break;
 
                 default:
@@ -199,7 +181,7 @@ public class MainApp {
         }
         try {
             PremiumCalculable standardCalculator = new StandardPremiumCalculator();
-            PremiumCalculable bonusCalculator = new NoClaimBonusCalculator();
+            PremiumCalculable bonusCalculator = new NoClaimBonusCalculator(new StandardPremiumCalculator());
             double standardPremium = standardCalculator.calculatePremium(selectedPolicy);
             double bonusPremium = bonusCalculator.calculatePremium(selectedPolicy);
             System.out.println("Standard Premium : " + standardPremium);
@@ -293,7 +275,7 @@ public class MainApp {
 
             for (VehicleType vehicleType : VehicleType.values()) {
 
-                double totalPremium = register.calculateTotalPremiumByVehicleType(vehicleType,premiumCalculator);
+                double totalPremium = register.calculateTotalPremiumByVehicleType(vehicleType);
 
                 System.out.println(vehicleType + " : " + totalPremium);
             }
@@ -354,7 +336,7 @@ public class MainApp {
 
     private void handleTopFiveHighestPremiumPoliciesUsingStream() {
         try {
-            List<Policy> topPolicies = register.findTopFiveHighestPremiumPoliciesUsingStream(premiumCalculator);
+            List<Policy> topPolicies = register.findTopFiveHighestPremiumPoliciesUsingStream();
 
             if (topPolicies.isEmpty()) {
                 System.out.println("No policies available.");

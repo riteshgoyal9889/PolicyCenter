@@ -13,7 +13,6 @@ public class BikePolicy extends Policy {
         this.engineCC = engineCC;
     }
 
-
     @Override
     public String getPolicyDetails() {
 

@@ -33,7 +33,7 @@ class PolicyRegisterTest {
 
     @BeforeEach
     void setUp() {
-        register = new PolicyRegister();
+        register = new PolicyRegister(premiumCalculator -> 0.0); // Using a dummy premium calculator for testing
         TestData.sixPolicyDataset().forEach(register::add);
     }
 

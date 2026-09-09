@@ -19,7 +19,6 @@ public abstract class Policy {
     private final LocalDate expiryDate;
     private PolicyStatus status;
 
-
     public Policy(String policyNumber, PolicyOwner policyOwner, VehicleType vehicleType, int claimCount, LocalDate startDate, double durationInYears) {
         this.policyNumber = policyNumber.trim();
         this.policyOwner = policyOwner;
@@ -76,10 +75,8 @@ public abstract class Policy {
             throw new IllegalStatusChangeException(
                     policyNumber,
                     "Policy "
-                            + policyNumber
-                            + " is currently "
-                            + status
-                            + " and cannot be expired."
+                            + policyNumber + " is currently "
+                            + status + " and cannot be expired."
             );
         }
 
@@ -95,9 +92,8 @@ public abstract class Policy {
         }
         long daysToExpiry = ChronoUnit.DAYS.between(today,expiryDate);
 
-        if (daysToExpiry > 30)
-        {throw new RenewalNotAllowedException(policyNumber, "Renewal requested " + (daysToExpiry - 30)
-                + " days too early.");
+        if (daysToExpiry > 30) {
+            throw new RenewalNotAllowedException(policyNumber, "Renewal requested " + (daysToExpiry - 30) + " days too early.");
         }
         if (claimCount >= 3) {
             throw new RenewalNotAllowedException(policyNumber, "Policy has 3 or more claims. Refer to underwriting.");

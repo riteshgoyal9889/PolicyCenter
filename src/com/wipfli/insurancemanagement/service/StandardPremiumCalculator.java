@@ -15,13 +15,10 @@ public class StandardPremiumCalculator implements PremiumCalculable {
         if (policy == null) {
             throw new IllegalArgumentException("Policy cannot be null.");
         }
-
         double basePremium = policy.getVehicleType().getBasePremium();
-
         double premium = basePremium;
 
         premium += calculateAgeLoading(policy.getPolicyOwner().getAge(), basePremium);
-
         premium += calculateClaimLoading(policy.getClaimCount());
 
         return premium;

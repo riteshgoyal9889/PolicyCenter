@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class NoClaimBonusCalculatorTest {
 
-    private final NoClaimBonusCalculator bonusCalculator = new NoClaimBonusCalculator();
+    private final NoClaimBonusCalculator bonusCalculator = new NoClaimBonusCalculator((new StandardPremiumCalculator()));
     private final StandardPremiumCalculator standardCalculator = new StandardPremiumCalculator();
 
 /*
