@@ -1,0 +1,10 @@
+package com.wipfli.training.exception;
+
+public class PolicyNotFoundException extends Exception {
+
+    public PolicyNotFoundException(
+            String message) {
+
+        super(message);
+    }
+}
