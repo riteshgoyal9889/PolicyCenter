@@ -1,0 +1,35 @@
+Create Policy
+POST http://localhost:8080/api/policies/car
+{
+  "policyNumber": "CAR1001",
+  "ownerName": "Ritesh",
+  "ownerAge": 25,
+  "claimCount": 0,
+  "startDate": "2026-09-10",
+  "durationInYears": 1,
+  "registrationNumber": "MH12AB1234"
+}
+
+
+GET policies
+http://localhost:8080/api/policies/CAR1001
+
+GET All Policies
+http://localhost:8080/api/policies
+
+GET Premium
+http://localhost:8080/api/policies/CAR1001/premium
+
+Record Claim
+POST
+http://localhost:8080/api/policies/CAR1001/claims
+
+Expire Policy
+POST
+http://localhost:8080/api/policies/CAR1001/expire
+
+Renew Policy
+POST
+http://localhost:8080/api/policies/CAR1001/renew
+
+http://localhost:8080/api/policies/CAR1001/renew?asOf=2027-09-18
