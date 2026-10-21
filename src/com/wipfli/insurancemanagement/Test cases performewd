@@ -1,0 +1,61 @@
+a)StandardPremiumCalculatorTest
+
+1.Calculate premium for CAR policy with young driver and claim
+2.Calculate premium for TRUCK policy with young driver and no claims
+3.Calculate premium for BIKE policy with regular driver and claims
+4.Calculate premium for CAR policy with regular driver and no claims
+5.Calculate premium for BIKE policy with regular driver and no claims
+6.Calculate premium for CAR policy with multiple claims
+7.Verify IllegalArgumentException is thrown when policy is null
+
+b)PolicyValidatorTest
+
+1.for name
+valid customer name passes validation successfully
+Empty customer name throws InvalidPolicyDataException
+Customer name containing digits throws InvalidPolicyDataException
+
+for age
+Valid customer age passes validation successfully
+Underage customer throws InvalidPolicyDataException
+Overage customer throws InvalidPolicyDataException
+
+for policynumber
+Valid policy number passes validation successfully
+Empty policy number throws InvalidPolicyDataException
+
+for claim count
+Valid claim count passes validation successfully
+Negative claim count throws InvalidPolicyDataException
+
+for expiry dATE
+Future expiry date passes validation successfully
+Past expiry date throws InvalidPolicyDataException
+
+
+NoClaimBonusCalculatorTest
+
+No-claim bonus increases premium for a young driver with no claims
+No-claim bonus is applied for a truck policy with no claims
+No-claim bonus is applied for a bike policy with no claims
+No-claim bonus is not applied when claims exist
+Bonus premium is always less than or equal to standard premium
+Premium calculation throws IllegalArgumentException when policy is nu
+
+PolicyRegisterTest
+
+Find policy by number returns matching policy
+Find policy by number returns empty when policy does not exist
+Count policies by vehicle type groups correctly
+Find policies expiring within date range
+Find policies by customer name
+find  policy by vehicle type
+Find customer with most policies
+Duplicate policy number throws DuplicatePolicyNumberException
+
+ExceptionHierarchyTest
+
+PolicyBusinessException extends RuntimeException
+PolicyNotFoundException extends Exception
+Exception message contains policy number
+Exception constructors correctly store message information
