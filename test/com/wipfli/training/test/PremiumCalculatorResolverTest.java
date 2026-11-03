@@ -4,7 +4,6 @@ import com.wipfli.training.exception.PolicyNotFoundException;
 import com.wipfli.training.model.CarPolicy;
 import com.wipfli.training.model.Policy;
 import com.wipfli.training.model.VehicleType;
-import com.wipfli.training.repository.InMemoryPolicyRepository;
 import com.wipfli.training.repository.PolicyRepository;
 import com.wipfli.training.service.NoClaimBonusCalculator;
 import com.wipfli.training.service.PolicyRegister;
@@ -14,11 +13,14 @@ import com.wipfli.training.service.StandardPremiumCalculator;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import static com.wipfli.training.test.TestData.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class PremiumCalculatorResolverTest {
 
@@ -69,19 +71,20 @@ class PremiumCalculatorResolverTest {
 
     @Test
     void missingPolicyNumberProducesExpectedApplicationException() {
-        PolicyRepository repository = new InMemoryPolicyRepository();
-        PolicyRegister register = new PolicyRegister(resolver, repository);
+        PolicyRepository repository = mock(PolicyRepository.class);
+        when(repository.findById("POL-404")).thenReturn(Optional.empty());
 
+        PolicyRegister register = new PolicyRegister(resolver, repository);
         assertThrows(PolicyNotFoundException.class, () -> register.calculatePremium("POL-404"));
     }
 
     @Test
     void policyRegisterUsesCalculatorReturnedByResolver() throws PolicyNotFoundException {
-        PolicyRepository repository = new InMemoryPolicyRepository();
-        Policy policy = CAR_POLICY_YOUNG_DRIVER_NO_CLAIMS;
-        repository.save(policy);
+        PolicyRepository repository = mock(PolicyRepository.class);
+        when(repository.findById(CAR_POLICY_YOUNG_DRIVER_NO_CLAIMS.getPolicyNumber()))
+                .thenReturn(Optional.of(CAR_POLICY_YOUNG_DRIVER_NO_CLAIMS));
 
-        PremiumCalculatorResolver customResolver = new PremiumCalculatorResolver(new StandardPremiumCalculator(), new NoClaimBonusCalculator(new StandardPremiumCalculator())) {
+        PolicyRegister register = new PolicyRegister(new PremiumCalculatorResolver(new StandardPremiumCalculator(), new NoClaimBonusCalculator(new StandardPremiumCalculator())) {
             @Override
             public PremiumCalculable resolve(Policy candidate) {
                 return new PremiumCalculable() {
@@ -91,10 +94,9 @@ class PremiumCalculatorResolverTest {
                     }
                 };
             }
-        };
+        }, repository);
 
-        PolicyRegister register = new PolicyRegister(customResolver, repository);
-
-        assertEquals(123.45, register.calculatePremium(policy.getPolicyNumber()), 0.001);
+        assertEquals(123.45, register.calculatePremium(CAR_POLICY_YOUNG_DRIVER_NO_CLAIMS.getPolicyNumber()), 0.001);
     }
 }
+

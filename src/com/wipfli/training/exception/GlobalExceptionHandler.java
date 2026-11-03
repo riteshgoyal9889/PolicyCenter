@@ -14,8 +14,13 @@ public class GlobalExceptionHandler {
         return ex.getMessage();
     }
 
-    @ExceptionHandler({DuplicatePolicyNumberException.class, InvalidPolicyDataException.class,
-            IllegalStatusChangeException.class, RenewalNotAllowedException.class})
+    @ExceptionHandler({DuplicatePolicyNumberException.class})
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public String handleDuplicatePolicyNumber(DuplicatePolicyNumberException ex) {
+        return ex.getMessage();
+    }
+
+    @ExceptionHandler({InvalidPolicyDataException.class, IllegalStatusChangeException.class, RenewalNotAllowedException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public String handleBadRequest(PolicyBusinessException ex) {
         return ex.getMessage();

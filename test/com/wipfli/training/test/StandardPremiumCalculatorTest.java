@@ -1,22 +1,14 @@
-import com.wipfli.training.model.Policy;
+package com.wipfli.training.test;
+
 import com.wipfli.training.service.StandardPremiumCalculator;
 import org.junit.jupiter.api.Test;
 
-import static TestData.*;
+import static com.wipfli.training.test.TestData.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class StandardPremiumCalculatorTest {
 
     private final StandardPremiumCalculator calculator = new StandardPremiumCalculator();
-
-    /*
-    1.Calculate premium for CAR policy with young driver and claim
-    2.Calculate premium for TRUCK policy with young driver and no claims
-    3.Calculate premium for BIKE policy with regular driver and claims
-    4.Calculate premium for CAR policy with regular driver and no claims
-    6.Calculate premium for CAR policy with multiple claims
-    */
 
     @Test
     void calculatePremiumForCarWithYoungDriverAndClaim() {
@@ -48,3 +40,4 @@ class StandardPremiumCalculatorTest {
         assertEquals(1050.0, premium, 0.001);
     }
 }
+

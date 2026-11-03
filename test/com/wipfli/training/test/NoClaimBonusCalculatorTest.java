@@ -1,25 +1,18 @@
+package com.wipfli.training.test;
+
 import com.wipfli.training.model.Policy;
 import com.wipfli.training.service.NoClaimBonusCalculator;
 import com.wipfli.training.service.StandardPremiumCalculator;
 import org.junit.jupiter.api.Test;
 
-import static TestData.*;
+import static com.wipfli.training.test.TestData.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class NoClaimBonusCalculatorTest {
 
-    private final NoClaimBonusCalculator bonusCalculator = new NoClaimBonusCalculator((new StandardPremiumCalculator()));
+    private final NoClaimBonusCalculator bonusCalculator = new NoClaimBonusCalculator(new StandardPremiumCalculator());
     private final StandardPremiumCalculator standardCalculator = new StandardPremiumCalculator();
-
-    /*
-
-    1.No-claim bonus increases premium for a young driver with no claims
-    2.No-claim bonus is applied for a truck policy with no claims
-    3.No-claim bonus is applied for a bike policy with no claims
-    4.No-claim bonus is not applied when claims exist
-    5.Bonus premium is always less than or equal to standard premium
-     */
 
     @Test
     void noClaimBonusIncreasesPremiumForYoungDriver() {
@@ -60,5 +53,5 @@ class NoClaimBonusCalculatorTest {
         double bonusPremium = bonusCalculator.calculatePremium(policy);
         assertTrue(bonusPremium <= standardPremium);
     }
-
 }
+

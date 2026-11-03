@@ -1,20 +1,31 @@
 package com.wipfli.training.repository;
 
 import com.wipfli.training.model.Policy;
+import com.wipfli.training.model.VehicleType;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
-public interface PolicyRepository {
+public interface PolicyRepository extends JpaRepository<Policy, String> {
 
-    void save(Policy policy);
+    LocalDate REF_DATE = LocalDate.of(2026, 8, 9);
 
-    Optional<Policy> findByNumber(String policyNumber);
+    List<Policy> findByPolicyHolderNameIgnoreCase(String name);
 
-    boolean existsByNumber(String policyNumber);
+    List<Policy> findByVehicleType(VehicleType vehicleType);
 
-    List<Policy> findAll();
+    List<Policy> findByExpiryDateBetween(LocalDate startDate, LocalDate endDate);
+
+    @Query("""
+        select p
+        from Policy p
+        where p.expiryDate >= :startDate
+          and p.expiryDate <= :endDate
+        order by p.expiryDate asc
+    """)
+    List<Policy> findExpiringBetween(@Param("startDate") LocalDate startDate,
+                                     @Param("endDate") LocalDate endDate);
 }
-
-
-

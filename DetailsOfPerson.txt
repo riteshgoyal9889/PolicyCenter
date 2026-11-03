@@ -1,4 +1,4 @@
-Name: Ritesh Gotyal
+ame: Ritesh Gotyal
 DOB: 27/09/2003
 Jurisdiction: IL
 ------------------------

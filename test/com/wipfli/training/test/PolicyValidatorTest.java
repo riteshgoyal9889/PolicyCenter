@@ -1,8 +1,10 @@
+package com.wipfli.training.test;
+
 import com.wipfli.training.exception.InvalidPolicyDataException;
 import com.wipfli.training.service.PolicyValidator;
 import org.junit.jupiter.api.Test;
 
-import static TestData.REFERENCE_DATE;
+import static com.wipfli.training.test.TestData.REFERENCE_DATE;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -10,28 +12,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class PolicyValidatorTest {
 
     private final PolicyValidator validator = new PolicyValidator();
-    /*
-
-    a)for name
-        valid customer name passes validation successfully
-        Empty customer name throws InvalidPolicyDataException
-        Customer name containing digits throws InvalidPolicyDataException
-
-    b)for age
-        Valid customer age passes validation successfully
-        Underage customer throws InvalidPolicyDataException
-        Overage customer throws InvalidPolicyDataException
-
-    c)for policynumber
-        Valid policy number passes validation successfully
-        Empty policy number throws InvalidPolicyDataException
-
-    d)for claim count
-        Negative claim count throws InvalidPolicyDataException
-
-    e)for expiry dATE
-        Past expiry date throws
-     */
 
     @Test
     void validCustomerNamePasses() {
@@ -95,3 +75,4 @@ class PolicyValidatorTest {
                 () -> validator.validateExpiryDate("POL-2001", REFERENCE_DATE.minusYears(2), 1));
     }
 }
+

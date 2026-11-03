@@ -80,10 +80,10 @@
 //
 //    private void seedSampleData() {
 //        try {
-//            PolicyOwner ravi = new PolicyOwner("Ravi", 22);
-//            PolicyOwner meena = new PolicyOwner("Meena", 34);
-//            PolicyOwner ajay = new PolicyOwner("Ajay", 41);
-//            PolicyOwner sneha = new PolicyOwner("Sneha", 29);
+//            PolicyHolder ravi = new PolicyHolder("Ravi", 22);
+//            PolicyHolder meena = new PolicyHolder("Meena", 34);
+//            PolicyHolder ajay = new PolicyHolder("Ajay", 41);
+//            PolicyHolder sneha = new PolicyHolder("Sneha", 29);
 //
 //            register.add(PolicyFactory.createCarPolicy("POL-2001", ravi, VehicleType.CAR, 1, LocalDate.of(2026, 8, 15),1,"MH12AB9889"));
 //            register.add(PolicyFactory.createTruckPolicy("POL-2002", ravi, VehicleType.TRUCK, 0, LocalDate.of(2026, 9, 1),1,5000));
@@ -119,7 +119,7 @@
 //        try {
 //            String customerName = readCustomerName(scanner,validator);
 //            int customerAge = readCustomerAge(scanner, validator);
-//            PolicyOwner policyOwner = new PolicyOwner(customerName, customerAge);
+//            PolicyHolder policyHolder = new PolicyHolder(customerName, customerAge);
 //
 //            String policyNumber = readString(scanner, "Enter policy number: ");
 //            validator.validatePolicyNumber(policyNumber);
@@ -135,19 +135,19 @@
 //                case CAR:
 //                    String registrationNumber = readString( scanner,"Enter Registration Number: ");
 //                    System.out.println("-----Policy for CAR-----");
-//                    policy = PolicyFactory.createCarPolicy(policyNumber,policyOwner,vehicleType,claimCount,startDate,duration, registrationNumber);
+//                    policy = PolicyFactory.createCarPolicy(policyNumber,policyHolder,vehicleType,claimCount,startDate,duration, registrationNumber);
 //                    break;
 //
 //                case BIKE:
 //                    int engineCC = readInt(scanner, "Enter Engine CC: ");
 //                    System.out.println("-----Policy for BIKE-----");
-//                    policy = PolicyFactory.createBikePolicy(policyNumber,policyOwner,vehicleType,claimCount,startDate,duration, engineCC);
+//                    policy = PolicyFactory.createBikePolicy(policyNumber,policyHolder,vehicleType,claimCount,startDate,duration, engineCC);
 //                    break;
 //
 //                case TRUCK:
 //                    double loadCapacity = readDouble(scanner, "Enter Load Capacity: ");
 //                    System.out.println("-----Policy for TRUCK-----");
-//                    policy = PolicyFactory.createTruckPolicy(policyNumber,policyOwner,vehicleType,claimCount,startDate,duration, loadCapacity);
+//                    policy = PolicyFactory.createTruckPolicy(policyNumber,policyHolder,vehicleType,claimCount,startDate,duration, loadCapacity);
 //                    break;
 //
 //                default:
@@ -347,7 +347,7 @@
 //            topPolicies.forEach(policy -> {
 //                double premium = premiumCalculator.calculatePremium(policy);
 //                System.out.println("Policy Number: " + policy.getPolicyNumber()
-//                                + " | Customer: " + policy.getPolicyOwner().getName()
+//                                + " | Customer: " + policy.getPolicyHolder().getName()
 //                                + " | Vehicle Type: " + policy.getVehicleType()
 //                                + " | Premium: " + premium
 //                );

@@ -30,7 +30,7 @@ public class PremiumCalculatorResolver {
         if (policy == null) {
             throw new IllegalArgumentException("Policy cannot be null.");
         }
-        if (policy.getPolicyOwner() == null) {
+        if (policy.getPolicyHolder() == null) {
             throw new IllegalArgumentException("Policy owner cannot be null.");
         }
         if (policy.getVehicleType() == null) {

@@ -20,7 +20,7 @@ public class StandardPremiumCalculator implements PremiumCalculable {
         double basePremium = policy.getVehicleType().getBasePremium();
         double premium = basePremium;
 
-        premium += calculateAgeLoading(policy.getPolicyOwner().getAge(), basePremium);
+        premium += calculateAgeLoading(policy.getPolicyHolder().getAge(), basePremium);
         premium += calculateClaimLoading(policy.getClaimCount());
 
         return premium;

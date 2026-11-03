@@ -7,7 +7,7 @@ import com.wipfli.training.dto.PolicyResponse;
 import com.wipfli.training.dto.PremiumResponse;
 import com.wipfli.training.exception.PolicyNotFoundException;
 import com.wipfli.training.model.Policy;
-import com.wipfli.training.model.PolicyOwner;
+import com.wipfli.training.model.PolicyHolder;
 import com.wipfli.training.model.VehicleType;
 import com.wipfli.training.service.PolicyFactory;
 import com.wipfli.training.service.PolicyRegister;
@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,7 +41,7 @@ public class PolicyController {
 
     @PostMapping("/car")
     public ResponseEntity<PolicyResponse> createCarPolicy(@RequestBody CreateCarPolicyRequest request) {
-        PolicyOwner customer = new PolicyOwner(request.getOwnerName(), request.getOwnerAge());
+        PolicyHolder customer = new PolicyHolder(request.getOwnerName(), request.getOwnerAge());
         Policy policy = PolicyFactory.createCarPolicy(
                 request.getPolicyNumber(), customer, VehicleType.CAR,
                 request.getClaimCount(), request.getStartDate(), request.getDurationInYears(),
@@ -53,7 +54,7 @@ public class PolicyController {
 
     @PostMapping("/truck")
     public ResponseEntity<PolicyResponse> createTruckPolicy(@RequestBody CreateTruckPolicyRequest request) {
-        PolicyOwner customer = new PolicyOwner(request.getOwnerName(), request.getOwnerAge());
+        PolicyHolder customer = new PolicyHolder(request.getOwnerName(), request.getOwnerAge());
         Policy policy = PolicyFactory.createTruckPolicy(
                 request.getPolicyNumber(), customer, VehicleType.TRUCK,
                 request.getClaimCount(), request.getStartDate(), request.getDurationInYears(),
@@ -66,7 +67,7 @@ public class PolicyController {
 
     @PostMapping("/bike")
     public ResponseEntity<PolicyResponse> createBikePolicy(@RequestBody CreateBikePolicyRequest request) {
-        PolicyOwner customer = new PolicyOwner(request.getOwnerName(), request.getOwnerAge());
+        PolicyHolder customer = new PolicyHolder(request.getOwnerName(), request.getOwnerAge());
         Policy policy = PolicyFactory.createBikePolicy(
                 request.getPolicyNumber(), customer, VehicleType.BIKE,
                 request.getClaimCount(), request.getStartDate(), request.getDurationInYears(),
@@ -92,7 +93,6 @@ public class PolicyController {
         return ResponseEntity.ok(responses);
     }
 
-//    Records a claim against a policy.
     @PostMapping("/{policyNumber}/claims")
     public ResponseEntity<PolicyResponse> recordClaim(@PathVariable String policyNumber) throws PolicyNotFoundException {
         policyRegister.recordClaim(policyNumber);
@@ -112,9 +112,13 @@ public class PolicyController {
     @PostMapping("/{policyNumber}/renew")
     public ResponseEntity<PolicyResponse> renewPolicy(
             @PathVariable String policyNumber,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate asOf)
+            @RequestParam(required = false) String on)
             throws PolicyNotFoundException {
-        policyRegister.renewPolicy(policyNumber, asOf != null ? asOf : LocalDate.now());
+        LocalDate renewalDate = (on != null && !on.isBlank())
+                ? LocalDate.parse(on, DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                : LocalDate.now();
+
+        policyRegister.renewPolicy(policyNumber, renewalDate);
         Policy policy = policyRegister.findByPolicyNumber(policyNumber)
                 .orElseThrow(() -> new PolicyNotFoundException("Policy not found: " + policyNumber));
         return ResponseEntity.ok(PolicyResponse.from(policy, HttpStatus.OK, "Policy renewed successfully"));

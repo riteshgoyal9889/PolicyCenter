@@ -1,48 +1,40 @@
+package com.wipfli.training.test;
+
 import com.wipfli.training.exception.DuplicatePolicyNumberException;
 import com.wipfli.training.model.Policy;
 import com.wipfli.training.model.VehicleType;
-import com.wipfli.training.repository.InMemoryPolicyRepository;
 import com.wipfli.training.repository.PolicyRepository;
 import com.wipfli.training.service.PolicyRegister;
 import com.wipfli.training.service.PremiumCalculatorResolver;
-import com.wipfli.training.service.StandardPremiumCalculator;
-import com.wipfli.training.service.NoClaimBonusCalculator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+import org.springframework.context.annotation.Import;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static TestData.CAR_POLICY_YOUNG_DRIVER_WITH_CLAIM;
-import static TestData.REFERENCE_DATE;
+import static com.wipfli.training.test.TestData.CAR_POLICY_YOUNG_DRIVER_WITH_CLAIM;
+import static com.wipfli.training.test.TestData.REFERENCE_DATE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@DataJpaTest
+@Import({PremiumCalculatorResolver.class, PolicyRegister.class})
 class PolicyRegisterTest {
 
-    /*
-    1.Find policy by number returns matching policy
-    2.Find policy by number returns empty when policy does not exist
-    3.Count policies by vehicle type groups correctly
-    4.Find policies expiring within date range
-    5.Find policies by customer name
-    6.find  policy by vehicle type
-    7.Find customer with most policies
-    8.Duplicate policy number throws DuplicatePolicyNumberException
-     */
+    @Autowired
+    private PolicyRepository repository;
+
+    @Autowired
     private PolicyRegister register;
 
     @BeforeEach
     void setUp() {
-        PolicyRepository repository = new InMemoryPolicyRepository();
-        PremiumCalculatorResolver resolver = new PremiumCalculatorResolver(
-                new StandardPremiumCalculator(),
-                new NoClaimBonusCalculator(new StandardPremiumCalculator())
-        );
-
-        register = new PolicyRegister(resolver, repository);
+        repository.deleteAll();
         TestData.sixPolicyDataset().forEach(register::add);
     }
 
@@ -71,7 +63,7 @@ class PolicyRegisterTest {
 
     @Test
     void findPoliciesExpiringWithinReturnsPoliciesInRange() {
-        List<Policy> expiring = register.findPoliciesExpiringWithin(400,REFERENCE_DATE);
+        List<Policy> expiring = register.findPoliciesExpiringWithin(400, REFERENCE_DATE);
 
         assertEquals(4, expiring.size());
         assertEquals("POL-2001", expiring.get(0).getPolicyNumber());
@@ -85,10 +77,7 @@ class PolicyRegisterTest {
         List<Policy> policies = register.findPoliciesByCustomerName("Ravi");
 
         assertEquals(4, policies.size());
-
-        assertTrue(
-                policies.stream().allMatch(
-                        policy -> policy.getPolicyOwner().getName().equalsIgnoreCase("Ravi")));
+        assertTrue(policies.stream().allMatch(policy -> policy.getPolicyHolder().getName().equalsIgnoreCase("Ravi")));
     }
 
     @Test
@@ -96,7 +85,7 @@ class PolicyRegisterTest {
         List<Policy> policies = register.findByVehicleType(VehicleType.CAR);
 
         assertEquals(4, policies.size());
-        assertTrue(policies.stream().allMatch(policy ->policy.getVehicleType() == VehicleType.CAR));
+        assertTrue(policies.stream().allMatch(policy -> policy.getVehicleType() == VehicleType.CAR));
     }
 
     @Test

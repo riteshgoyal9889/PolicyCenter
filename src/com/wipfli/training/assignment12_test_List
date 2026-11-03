@@ -1,0 +1,33 @@
+Assignment 12 Test Plan
+
+Policy subtype persistence
+
+Save a CarPolicy, flush and clear the persistence context, and reload it. Verify that it is a CarPolicy and that its registration number survives.
+Save a BikePolicy, flush and clear the persistence context, and reload it. Verify that it is a BikePolicy and that its engine CC survives.
+Save a TruckPolicy, flush and clear the persistence context, and reload it. Verify that it is a TruckPolicy and that its load capacity survives.
+
+Domain behavior after database round-trip
+
+Expire a policy, save it, flush and clear, and reload it. Verify that the status remains EXPIRED.
+Reload an expired policy and verify that an invalid renew operation is still rejected by the Policy domain logic.
+Record a claim, save the policy, flush and clear, and reload it. Verify that the claim data survives.
+
+Database representation
+
+Verify using a native SQL query that policy status is stored as text, such as ACTIVE or EXPIRED, rather than as 0 or 1.
+Verify that the policy discriminator/type is stored in a readable form.
+
+Repository queries
+
+Save policies for multiple customers and verify that the customer-name query returns only the requested customer's policies.
+Verify that the expiry-range query includes the lower boundary date.
+Verify that the expiry-range query includes the upper boundary date.
+Verify that dates immediately outside the boundaries are excluded.
+
+Duplicate policy number
+
+Save two different policies using the same policy number directly through PolicyRepository and document whether the second save updates, merges, or causes a database exception.
+
+Restart persistence
+Create a policy through the REST API, restart the application, and verify that the policy is still returned.
+Expire a policy or record a claim, restart the application, and verify that the updated state is still returned.

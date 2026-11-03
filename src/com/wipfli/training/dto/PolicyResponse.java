@@ -29,8 +29,8 @@ public class PolicyResponse {
         response.policyNumber = policy.getPolicyNumber();
         response.vehicleType = policy.getVehicleType().name();
         response.status = policy.getStatus().name();
-        response.customerName = policy.getPolicyOwner().getName();
-        response.customerAge = policy.getPolicyOwner().getAge();
+        response.customerName = policy.getPolicyHolder().getName();
+        response.customerAge = policy.getPolicyHolder().getAge();
         response.expiryDate = policy.getExpiryDate();
         response.previousClaims = policy.getClaimCount();
         response.details = policy.getPolicyDetails();

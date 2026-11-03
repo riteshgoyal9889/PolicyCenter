@@ -1,8 +1,10 @@
+package com.wipfli.training.test;
+
 import com.wipfli.training.dto.APIStatus;
 import com.wipfli.training.dto.PolicyResponse;
 import com.wipfli.training.model.CarPolicy;
 import com.wipfli.training.model.Policy;
-import com.wipfli.training.model.PolicyOwner;
+import com.wipfli.training.model.PolicyHolder;
 import com.wipfli.training.model.VehicleType;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -11,12 +13,13 @@ import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PolicyResponseTest {
 
     @Test
     void policyResponseIncludesApiStatusMetadata() {
-        PolicyOwner owner = new PolicyOwner("Ravi", 29);
+        PolicyHolder owner = new PolicyHolder("Ravi", 29);
         Policy policy = new CarPolicy(
                 "CAR1001",
                 owner,
@@ -31,7 +34,7 @@ class PolicyResponseTest {
 
         assertNotNull(response.getApiStatus());
         assertEquals(201, response.getApiStatus().getStatusCode());
-        assertEquals(true, response.getApiStatus().isSuccess());
+        assertTrue(response.getApiStatus().isSuccess());
         assertEquals("Policy created successfully", response.getApiStatus().getMessage());
         assertEquals("CAR1001", response.getPolicyNumber());
     }
@@ -41,7 +44,7 @@ class PolicyResponseTest {
         APIStatus status = APIStatus.of(HttpStatus.OK, "Policy retrieved successfully");
 
         assertEquals(200, status.getStatusCode());
-        assertEquals(true, status.isSuccess());
+        assertTrue(status.isSuccess());
         assertEquals("Policy retrieved successfully", status.getMessage());
     }
 }

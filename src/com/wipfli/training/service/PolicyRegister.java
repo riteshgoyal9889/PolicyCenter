@@ -14,8 +14,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.toList;
-
 @Service
 public class PolicyRegister {
 
@@ -28,32 +26,28 @@ public class PolicyRegister {
     }
 
     public void add(Policy policy) {
-        if (repository.existsByNumber(policy.getPolicyNumber())) {
+        if (repository.existsById(policy.getPolicyNumber())) {
             throw new DuplicatePolicyNumberException(policy.getPolicyNumber(), "Policy number already exists");
         }
         repository.save(policy);
     }
 
     public Optional<Policy> findByPolicyNumber(String policyNumber) {
-        return repository.findByNumber(policyNumber);
+        return repository.findById(policyNumber);
     }
 
     public Policy findByNumber(String policyNumber) throws PolicyNotFoundException {
-        return repository.findByNumber(policyNumber)
+        return repository.findById(policyNumber)
                 .orElseThrow(() -> new PolicyNotFoundException("Policy not found: " + policyNumber));
     }
 
     public List<Policy> findPoliciesByCustomerName(String customerName) {
-        return repository.findAll()
-                .stream()
-                .filter(policy -> policy.getPolicyOwner().getName().equalsIgnoreCase(customerName))
-                .collect(toList());
+        return repository.findByPolicyHolderNameIgnoreCase(customerName);
     }
 
     public double calculateTotalPremiumByVehicleType(VehicleType vehicleType) {
-        return repository.findAll()
+        return repository.findByVehicleType(vehicleType)
                 .stream()
-                .filter(policy -> policy.getVehicleType() == vehicleType)
                 .mapToDouble(policy -> premiumCalculatorResolver.resolve(policy).calculatePremium(policy))
                 .sum();
     }
@@ -65,12 +59,9 @@ public class PolicyRegister {
     }
 
     public List<Policy> findPoliciesExpiringWithin(int days, LocalDate referenceDate) {
-        LocalDate limitDate = referenceDate.plusDays(days);
-
-        return repository.findAll()
+        LocalDate end = referenceDate.plusDays(days);
+        return repository.findByExpiryDateBetween(referenceDate, end)
                 .stream()
-                .filter(policy -> !policy.getExpiryDate().isBefore(referenceDate))
-                .filter(policy -> !policy.getExpiryDate().isAfter(limitDate))
                 .sorted(Comparator.comparing(Policy::getExpiryDate))
                 .toList();
     }
@@ -79,7 +70,7 @@ public class PolicyRegister {
         return repository.findAll()
                 .stream()
                 .collect(Collectors.groupingBy(
-                        policy -> policy.getPolicyOwner().getName(),
+                        policy -> policy.getPolicyHolder().getName(),
                         Collectors.counting()
                 ))
                 .entrySet()
@@ -106,22 +97,19 @@ public class PolicyRegister {
     }
 
     public List<Policy> findByVehicleType(VehicleType vehicleType) {
-        return repository.findAll()
-                .stream()
-                .filter(policy -> policy.getVehicleType() == vehicleType)
-                .toList();
+        return repository.findByVehicleType(vehicleType);
     }
 
     public void recordClaim(String policyNumber) throws PolicyNotFoundException {
-        Policy policy = repository.findByNumber(policyNumber)
-                .orElseThrow(() -> new PolicyNotFoundException("Policy not found: " + policyNumber));
+        Policy policy = findByNumber(policyNumber);
         policy.recordClaim();
+        repository.save(policy);
     }
 
     public void expirePolicy(String policyNumber) throws PolicyNotFoundException {
-        Policy policy = repository.findByNumber(policyNumber)
-                .orElseThrow(() -> new PolicyNotFoundException("Policy not found: " + policyNumber));
-        policy.expirePolicy();
+        Policy policy = findByNumber(policyNumber);
+        policy.expire();
+        repository.save(policy);
     }
 
     public void renewPolicy(String policyNumber) throws PolicyNotFoundException {
@@ -129,15 +117,13 @@ public class PolicyRegister {
     }
 
     public void renewPolicy(String policyNumber, LocalDate today) throws PolicyNotFoundException {
-        Policy policy = repository.findByNumber(policyNumber)
-                .orElseThrow(() -> new PolicyNotFoundException("Policy not found: " + policyNumber));
-        policy.renewPolicy(today);
+        Policy policy = findByNumber(policyNumber);
+        policy.renew(today);
+        repository.save(policy);
     }
 
     public double calculatePremium(String policyNumber) throws PolicyNotFoundException {
-        Policy policy = repository.findByNumber(policyNumber)
-                .orElseThrow(() -> new PolicyNotFoundException("Policy not found: " + policyNumber));
-
+        Policy policy = findByNumber(policyNumber);
         return premiumCalculatorResolver.resolve(policy).calculatePremium(policy);
     }
 }
